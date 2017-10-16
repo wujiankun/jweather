@@ -12,7 +12,7 @@
         android:layout_marginLeft="@dimen/common_page_right"
         android:layout_marginTop="@dimen/common_page_right"
         android:textColor="#fff"
-        android:text="预报"
+        android:text="未来三天"
         android:textSize="@dimen/common_text_size" />
 
     <LinearLayout

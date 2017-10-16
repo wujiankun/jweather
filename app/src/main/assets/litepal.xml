@@ -5,5 +5,6 @@
         <mapping class='com.wjk.jweather.db.City'/>
         <mapping class='com.wjk.jweather.db.County'/>
         <mapping class='com.wjk.jweather.db.Province'/>
+        <mapping class='com.wjk.jweather.db.UsualCity'/>
     </list>
 </litepal>

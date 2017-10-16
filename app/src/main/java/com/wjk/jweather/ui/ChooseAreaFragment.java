@@ -2,7 +2,9 @@ package com.wjk.jweather.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import com.wjk.jweather.R;
 import com.wjk.jweather.db.City;
 import com.wjk.jweather.db.County;
 import com.wjk.jweather.db.Province;
+import com.wjk.jweather.db.UsualCity;
 import com.wjk.jweather.util.GsonUtil;
 import com.wjk.jweather.util.HttpUtil;
 
@@ -89,6 +92,19 @@ public class ChooseAreaFragment extends BaseFragment {
            // mParam1 = getArguments().getString(ARG_PARAM1);
            // mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        int addCityKey = getActivity().getIntent().getIntExtra("add_city",-1);
+        if(addCityKey<0){
+            List<UsualCity> usualCities = DataSupport.findAll(UsualCity.class);
+            if(usualCities!=null&&usualCities.size()>0){
+                UsualCity loveCity = usualCities.get(0);
+                for(UsualCity city:usualCities){
+                    if(city.isLoveCity()){
+                        loveCity = city;
+                    }
+                }
+                goWeatherActivity(loveCity.getWeatherId());
+            }
+        }
     }
 
     @Override
@@ -121,10 +137,8 @@ public class ChooseAreaFragment extends BaseFragment {
                         break;
                     case level_county:
                         String weatherId = counties.get(position).getWeatherId();
-                        Intent intent = new Intent(getActivity(),WeatherActivity.class);
-                        intent.putExtra("weather_id",weatherId);
-                        startActivity(intent);
-                        getActivity().finish();
+                        saveArea(counties.get(position));
+                        goWeatherActivity(weatherId);
                         break;
                 }
             }
@@ -144,6 +158,20 @@ public class ChooseAreaFragment extends BaseFragment {
             }
         });
         queryProvinces();
+    }
+
+    private void goWeatherActivity(String weatherId) {
+        Intent intent = new Intent(getActivity(),WeatherActivity.class);
+        intent.putExtra("weather_id",weatherId);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    private void saveArea(County county) {
+        UsualCity city = new UsualCity();
+        city.setCountyName(county.getCountyName());
+        city.setWeatherId(county.getWeatherId());
+        city.save();
     }
 
     private void queryProvinces() {

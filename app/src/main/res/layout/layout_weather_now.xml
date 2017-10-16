@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/common_page_right"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 <!--显示当前的气温和天气描述-->
     <TextView
         android:id="@+id/tv_degree"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
-        android:layout_gravity="end"
+        android:text="15c"
+        android:layout_marginRight="10dp"
         android:textSize="@dimen/big_text_size" />
 
     <TextView
@@ -18,7 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
-        android:layout_gravity="end"
+        android:layout_gravity="center_vertical"
+        android:text="begd"
         android:textSize="@dimen/common_text_size" />
 
 </LinearLayout>
