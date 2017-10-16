@@ -8,9 +8,9 @@ import org.litepal.crud.DataSupport;
  */
 
 public class Province extends DataSupport {
-    private int id;
+    private int id;//id是每个实体类都应该有的字段，此类中，不参与业务逻辑
     private String provinceName;
-    private int code;
+    private int code;//指代接口中返回的省id
 
     public int getId() {
         return id;
