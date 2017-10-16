@@ -1,10 +1,7 @@
-package com.wjk.jweather.fragment;
+package com.wjk.jweather.ui;
 
 import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.widget.BaseExpandableListAdapter;
 
 
 public abstract class BaseFragment extends Fragment {

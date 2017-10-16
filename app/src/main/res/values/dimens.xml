@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="common_text_size" >20sp</dimen>
+    <dimen name="common_page_right">10dp</dimen>
+    <dimen name="small_text_size">16sp</dimen>
+    <dimen name="big_text_size">60sp</dimen>
+    <dimen name="aqi_text_size">40sp</dimen>
+</resources>

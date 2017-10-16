@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context="com.wjk.jweather.ui.WeatherActivity">
+    <!--天气模块的框架页面-->
+    <ScrollView
+        android:id="@+id/sv_weather_layout"
+        android:layout_width="match_parent"
+        android:scrollbars="none"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <include layout="@layout/layout_weather_title" />
+            <include layout="@layout/layout_weather_now" />
+            <include layout="@layout/layout_weather_forecast" />
+            <include layout="@layout/layout_weather_aqi" />
+            <include layout="@layout/layout_weather_suggestion" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

@@ -13,6 +13,8 @@ public class Forecast {
     public Temperature tempreature;
     @SerializedName("cond")
     public More more;
+    @SerializedName("wind")
+    public Wind wind;
 
 
     public class Temperature{
@@ -23,5 +25,14 @@ public class Forecast {
     public class More{
         @SerializedName("txt_d")
         public String info;
+    }
+
+    public class Wind{
+        @SerializedName("dir")
+        public String direction;
+        @SerializedName("sc")
+        public String level;
+        @SerializedName("spd")
+        public String speed;
     }
 }

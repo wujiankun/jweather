@@ -14,15 +14,33 @@ public class Suggestion {
     public CarWash carWash;
     public Sport sport;
 
+    public DressSuggestion dressSuggestion;
+    public Uv uv;
+
     public class Comfort{
+        public String brf;
         @SerializedName("txt")
         public String info;
     }
     public class CarWash{
+        public String brf;
         @SerializedName("txt")
         public String info;
     }
     public class Sport{
+        public String brf;
+        @SerializedName("txt")
+        public String info;
+    }
+
+    public class DressSuggestion{
+        public String brf;
+        @SerializedName("txt")
+        public String info;
+    }
+
+    public class Uv{
+        public String brf;
         @SerializedName("txt")
         public String info;
     }

@@ -1,8 +1,7 @@
-package com.wjk.jweather.fragment;
+package com.wjk.jweather.ui;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -119,6 +118,13 @@ public class ChooseAreaFragment extends BaseFragment {
                     case level_city:
                         mSelectCity = cities.get(position);
                         queryCounties();
+                        break;
+                    case level_county:
+                        String weatherId = counties.get(position).getWeatherId();
+                        Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                        intent.putExtra("weather_id",weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
                         break;
                 }
             }

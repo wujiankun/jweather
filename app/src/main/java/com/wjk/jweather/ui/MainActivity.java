@@ -1,11 +1,11 @@
-package com.wjk.jweather;
+package com.wjk.jweather.ui;
 
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.wjk.jweather.fragment.BaseFragment;
-import com.wjk.jweather.fragment.ChooseAreaFragment;
+import com.wjk.jweather.R;
+import com.wjk.jweather.ui.BaseFragment;
+import com.wjk.jweather.ui.ChooseAreaFragment;
 
 public class MainActivity extends AppCompatActivity implements ChooseAreaFragment.OnFragmentInteractionListener{
 

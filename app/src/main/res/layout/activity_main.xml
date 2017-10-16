@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wjk.jweather.MainActivity">
+    tools:context="com.wjk.jweather.ui.MainActivity">
 
     <fragment
         android:id="@+id/frag_choose_area"
-        android:name="com.wjk.jweather.fragment.ChooseAreaFragment"
+        android:name="com.wjk.jweather.ui.ChooseAreaFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
