@@ -59,7 +59,6 @@ public class ChooseAreaFragment extends BaseFragment {
 
     private Province mSelectProvince;
     private City mSelectCity;
-    private County mSelectCounty;
 
     private int mCurrentLevel;
 
@@ -163,6 +162,7 @@ public class ChooseAreaFragment extends BaseFragment {
     private void goWeatherActivity(String weatherId) {
         Intent intent = new Intent(getActivity(),WeatherActivity.class);
         intent.putExtra("weather_id",weatherId);
+        intent.putExtra("from_choose_area",true);
         startActivity(intent);
         getActivity().finish();
     }

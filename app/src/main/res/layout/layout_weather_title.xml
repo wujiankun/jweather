@@ -3,22 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize">
     <!--天气页面的标题，显示城市名称与更新时间-->
-    <ImageButton
-        android:layout_marginLeft="@dimen/common_page_right"
-        android:background="@null"
-        android:id="@+id/ib_add_city"
-        android:src="@mipmap/ic_add_city"
-        android:layout_centerVertical="true"
-        android:layout_width="25dp"
-        android:layout_height="25dp" />
 
-    <TextView
-        android:id="@+id/tv_title_city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textColor="#fff"
-        android:textSize="@dimen/common_text_size"/>
 
     <TextView
         android:id="@+id/tv_update_time"
