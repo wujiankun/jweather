@@ -16,60 +16,25 @@
         android:textSize="@dimen/common_text_size" />
 
     <TextView
-        android:id="@+id/tv_air"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
+        android:text="生活建议"
         android:layout_margin="@dimen/common_page_right"
          />
     <TextView
-        android:id="@+id/tv_drsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
+        android:text="生活建议"
         android:layout_margin="@dimen/common_page_right"
          />
     <TextView
-        android:id="@+id/tv_flu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
+        android:text="生活建议"
         android:layout_margin="@dimen/common_page_right"
          />
-    <TextView
-        android:id="@+id/tv_trav"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:layout_margin="@dimen/common_page_right"
-         />
-    <TextView
-        android:id="@+id/tv_comfort"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:layout_margin="@dimen/common_page_right"
-         />
-    <TextView
-        android:id="@+id/tv_uv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:layout_margin="@dimen/common_page_right"
-        />
-    <TextView
-        android:id="@+id/tv_sport"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:layout_margin="@dimen/common_page_right"
-         />
-    <TextView
-        android:id="@+id/tv_car_wash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:layout_margin="@dimen/common_page_right"
-        />
 
 </LinearLayout>

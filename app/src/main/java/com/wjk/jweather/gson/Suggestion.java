@@ -14,8 +14,16 @@ public class Suggestion {
     public CarWash carWash;
     public Sport sport;
 
+    @SerializedName("drsg")
     public DressSuggestion dressSuggestion;
+    @SerializedName("uv")
     public Uv uv;
+    @SerializedName("flu")
+    public Flu flu;
+    @SerializedName("trav")
+    public Trav trav;
+    @SerializedName("air")
+    public Air air;
 
     public class Comfort{
         public String brf;
@@ -40,6 +48,21 @@ public class Suggestion {
     }
 
     public class Uv{
+        public String brf;
+        @SerializedName("txt")
+        public String info;
+    }
+    public class Flu{
+        public String brf;
+        @SerializedName("txt")
+        public String info;
+    }
+    public class Trav{
+        public String brf;
+        @SerializedName("txt")
+        public String info;
+    }
+    public class Air{
         public String brf;
         @SerializedName("txt")
         public String info;

@@ -42,7 +42,8 @@
             android:id="@+id/sr_pull_fresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <ScrollView
+            <android.support.v4.widget.NestedScrollView
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:id="@+id/sv_weather_layout"
                 android:layout_width="match_parent"
                 android:scrollbars="none"
@@ -55,11 +56,13 @@
                     android:paddingBottom="?attr/actionBarSize"
                     >
                     <include layout="@layout/layout_weather_now" />
+                    <include layout="@layout/layout_hourly_forecast" />
                     <include layout="@layout/layout_weather_forecast" />
                     <include layout="@layout/layout_weather_aqi" />
                     <include layout="@layout/layout_weather_suggestion" />
+                   <!-- <include layout="@layout/layout_weather_alarm" />-->
                 </LinearLayout>
-            </ScrollView>
+            </android.support.v4.widget.NestedScrollView>
         </android.support.v4.widget.SwipeRefreshLayout>
     </android.support.design.widget.CoordinatorLayout>
 

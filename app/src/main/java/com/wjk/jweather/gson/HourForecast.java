@@ -4,30 +4,22 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by wujiankun on 2017/10/16.
- * 单日的天气信息
+ * 每小时的天气信息
  */
 
-public class Forecast {
+public class HourForecast {
     public String date;
     @SerializedName("tmp")
-    public Temperature tempreature;
+    public String tempreature;
     @SerializedName("cond")
     public More more;
     @SerializedName("wind")
     public Wind wind;
 
-
-    public class Temperature {
-        public String max;
-        public String min;
-    }
-
     public class More {
-        public String code_d;
-        public String code_n;
-        public String txt_d;
-        public String txt_n;
-
+        @SerializedName("txt")
+        public String info;
+        public String code;
     }
 
     public class Wind {

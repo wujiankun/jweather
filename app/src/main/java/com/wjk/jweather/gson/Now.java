@@ -11,10 +11,12 @@ public class Now {
     @SerializedName("tmp")
     public String temperature;
     @SerializedName("cond")
-    public More more;
-    public class More{
+    public Cond more;
+    public class Cond{
         @SerializedName("txt")
         public String info;
+        public String code;
     }
+    @SerializedName("wind")
     public Forecast.Wind wind;
 }

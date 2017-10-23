@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/colorBgPrimary"
     android:layout_margin="@dimen/common_page_right"
+    android:padding="@dimen/common_page_right"
     >
 <!--显示当前的气温和天气描述-->
     <TextView
@@ -24,9 +26,18 @@
 
     <TextView
         android:layout_alignBaseline="@id/tv_degree"
+        android:id="@+id/tv_now_wind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#fff"
+        android:layout_alignParentRight="true"
+        android:textSize="@dimen/common_text_size" />
+
+    <TextView
         android:id="@+id/tv_update_time"
         android:layout_width="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:textColor="#fff"
         android:layout_height="wrap_content" />
 

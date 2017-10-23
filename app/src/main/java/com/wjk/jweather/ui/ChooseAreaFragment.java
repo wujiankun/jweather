@@ -1,10 +1,13 @@
 package com.wjk.jweather.ui;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -97,7 +100,7 @@ public class ChooseAreaFragment extends BaseFragment {
             if(usualCities!=null&&usualCities.size()>0){
                 UsualCity loveCity = usualCities.get(0);
                 for(UsualCity city:usualCities){
-                    if(city.isLoveCity()){
+                    if(city.isLoveCity()>0){
                         loveCity = city;
                     }
                 }
@@ -168,9 +171,14 @@ public class ChooseAreaFragment extends BaseFragment {
     }
 
     private void saveArea(County county) {
+        ContentValues values = new ContentValues();
+        values.put("isLoveCity",0);
+        DataSupport.updateAll(UsualCity.class,values,"isLoveCity=?","1");
         UsualCity city = new UsualCity();
         city.setCountyName(county.getCountyName());
         city.setWeatherId(county.getWeatherId());
+        city.setLoveCity(1);
+        city.setProvinceName(mSelectProvince.getProvinceName());
         city.save();
     }
 

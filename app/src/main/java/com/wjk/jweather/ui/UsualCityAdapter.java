@@ -1,5 +1,6 @@
 package com.wjk.jweather.ui;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,11 +39,13 @@ public class UsualCityAdapter extends RecyclerView.Adapter {
         return holder;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         MyHolder myHolder = (MyHolder) holder;
         String countyName = cities.get(position).getCountyName();
-        myHolder.cityNameView.setText(countyName);
+        String provinceName = cities.get(position).getProvinceName();
+        myHolder.cityNameView.setText(provinceName+"-"+countyName);
     }
 
     @Override

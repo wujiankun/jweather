@@ -2,8 +2,6 @@ package com.wjk.jweather.db;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.List;
-
 /**
  * Created by wujiankun on 2017/10/16.
  * 保存用户常用地点
@@ -11,9 +9,18 @@ import java.util.List;
 
 public class UsualCity extends DataSupport {
     private int id;
-    private boolean isLoveCity;
+    private int isLoveCity;
 
     private String countyName;
+    private String provinceName;
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
 
     private String weatherId;
 
@@ -25,11 +32,11 @@ public class UsualCity extends DataSupport {
         this.id = id;
     }
 
-    public boolean isLoveCity() {
+    public int isLoveCity() {
         return isLoveCity;
     }
 
-    public void setLoveCity(boolean loveCity) {
+    public void setLoveCity(int loveCity) {
         isLoveCity = loveCity;
     }
 
