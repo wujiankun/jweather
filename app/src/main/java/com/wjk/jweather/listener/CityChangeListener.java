@@ -1,4 +1,4 @@
-package com.wjk.jweather.ui;
+package com.wjk.jweather.listener;
 
 import com.wjk.jweather.db.UsualCity;
 

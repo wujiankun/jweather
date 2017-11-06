@@ -5,17 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.wjk.jweather.R;
-import com.wjk.jweather.ui.BaseFragment;
-import com.wjk.jweather.ui.ChooseAreaFragment;
 
-public class MainActivity extends AppCompatActivity implements ChooseAreaFragment.OnFragmentInteractionListener {
+public class LocateSelectActivity extends AppCompatActivity implements ChooseAreaFragment.OnFragmentInteractionListener {
 
     private BaseFragment mCurrentFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_locate_select);
     }
 
     @Override

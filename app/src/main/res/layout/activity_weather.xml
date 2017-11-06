@@ -55,6 +55,7 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="?attr/actionBarSize"
                     >
+                    <include layout="@layout/layout_weather_calendar" />
                     <include layout="@layout/layout_weather_now" />
                     <include layout="@layout/layout_hourly_forecast" />
                     <include layout="@layout/layout_weather_forecast" />

@@ -1,7 +1,6 @@
-package com.wjk.jweather.ui;
+package com.wjk.jweather.adapter;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +9,8 @@ import android.widget.TextView;
 
 import com.wjk.jweather.R;
 import com.wjk.jweather.db.UsualCity;
+import com.wjk.jweather.listener.CityChangeListener;
+
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ import java.util.List;
 public class UsualCityAdapter extends RecyclerView.Adapter {
     private List<UsualCity> cities;
     private CityChangeListener listener;
-    UsualCityAdapter(List<UsualCity> cities,CityChangeListener listener){
+    public UsualCityAdapter(List<UsualCity> cities,CityChangeListener listener){
         this.cities = cities;
         this.listener = listener;
     }
@@ -58,7 +59,6 @@ public class UsualCityAdapter extends RecyclerView.Adapter {
         MyHolder(View itemView) {
             super(itemView);
             cityNameView = itemView.findViewById(R.id.tv_area_name);
-           // cityNameView.setTextColor(Color.parseColor("#ffffff"));
         }
     }
 

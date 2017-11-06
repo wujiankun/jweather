@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wjk.jweather.ui.MainActivity">
+    tools:context="com.wjk.jweather.ui.LocateSelectActivity">
 
     <fragment
         android:id="@+id/frag_choose_area"

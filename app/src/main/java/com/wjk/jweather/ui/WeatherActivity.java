@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -23,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,16 +30,20 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.wjk.jweather.R;
+import com.wjk.jweather.adapter.UsualCityAdapter;
 import com.wjk.jweather.db.UsualCity;
 import com.wjk.jweather.gson.Forecast;
 import com.wjk.jweather.gson.HourForecast;
 import com.wjk.jweather.gson.Weather;
+import com.wjk.jweather.listener.CityChangeListener;
 import com.wjk.jweather.util.GsonUtil;
 import com.wjk.jweather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +77,11 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     private UsualCityAdapter mUsualCityAdapter;
 
     private String mWeatherId;
+    private final int[] calendarBgArr = {R.mipmap.calendar_january,
+            R.mipmap.calendar_february,R.mipmap.calendar_march,R.mipmap.calendar_april,
+            R.mipmap.calendar_may,R.mipmap.calendar_june,R.mipmap.calendar_july,
+            R.mipmap.calendar_august,R.mipmap.calendar_february,R.mipmap.calendar_october,
+            R.mipmap.calendar_november,R.mipmap.calendar_december};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +92,19 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
         initToolBar();
         initViews();
+        initCalendarBg();
         initSelectedCityView();
     }
 
+    private void initCalendarBg() {
+        ImageView calendarBg = findViewById(R.id.iv_calendar_bg);
+        int i = Calendar.getInstance().get(Calendar.MONTH);
+        calendarBg.setImageResource(calendarBgArr[i]);
+    }
+
+    /**
+     * 初始化抽屉中已选择城市列表
+     */
     private void initSelectedCityView() {
         RecyclerView recyclerView = findViewById(R.id.rv_my_city_list);
         final List<UsualCity> cities = DataSupport.findAll(UsualCity.class);
@@ -190,7 +207,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.menu_add_city:
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this, LocateSelectActivity.class);
                 intent.putExtra("add_city", 1);
                 startActivity(intent);
                 //startActivityForResult(intent,1);
