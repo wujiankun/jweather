@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,7 +12,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -20,31 +20,35 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.wjk.jweather.BuildConfig;
 import com.wjk.jweather.R;
 import com.wjk.jweather.adapter.UsualCityAdapter;
+import com.wjk.jweather.airbeen.AirNow;
 import com.wjk.jweather.db.UsualCity;
-import com.wjk.jweather.gson.Forecast;
-import com.wjk.jweather.gson.HourForecast;
-import com.wjk.jweather.gson.Weather;
+import com.wjk.jweather.weatherbeen.DailyForecast;
+import com.wjk.jweather.weatherbeen.Heweather6;
+import com.wjk.jweather.weatherbeen.Hourly;
+import com.wjk.jweather.weatherbeen.LifestyleMap;
 import com.wjk.jweather.listener.CityChangeListener;
+import com.wjk.jweather.util.AppConfig;
 import com.wjk.jweather.util.GsonUtil;
 import com.wjk.jweather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity implements View.OnClickListener {
@@ -57,31 +61,17 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     private LinearLayout hourlyLayout;
     private TextView aqiText;
     private TextView pm25Text;
-    private TextView comfortText;
-    private TextView carWashText;
-    private TextView sportText;
-    private TextView airSugText;
-    private TextView drsgText;
-    private TextView fluText;
-    private TextView travText;
-    private TextView uvText;
     private TextView pm10;
     private TextView airQuality;
     private TextView nowWind;
-
-
     private ImageView imageBg;
     private SwipeRefreshLayout sr_pull_fresh;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private UsualCityAdapter mUsualCityAdapter;
-
     private String mWeatherId;
-    private final int[] calendarBgArr = {R.mipmap.calendar_january,
-            R.mipmap.calendar_february,R.mipmap.calendar_march,R.mipmap.calendar_april,
-            R.mipmap.calendar_may,R.mipmap.calendar_june,R.mipmap.calendar_july,
-            R.mipmap.calendar_august,R.mipmap.calendar_february,R.mipmap.calendar_october,
-            R.mipmap.calendar_november,R.mipmap.calendar_december};
+    private LinearLayout lifeStyleLayout;
+    private ViewGroup weatherAiqLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,14 +82,8 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
         initToolBar();
         initViews();
-        initCalendarBg();
+        //initCalendarBg();
         initSelectedCityView();
-    }
-
-    private void initCalendarBg() {
-        ImageView calendarBg = findViewById(R.id.iv_calendar_bg);
-        int i = Calendar.getInstance().get(Calendar.MONTH);
-        calendarBg.setImageResource(calendarBgArr[i]);
     }
 
     /**
@@ -113,20 +97,19 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             public void onCityChange(UsualCity city) {
                 mWeatherId = city.getWeatherId();
                 requestWeather(mWeatherId);
-                if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawers();
                 }
 
                 ContentValues values = new ContentValues();
-                values.put("isLoveCity",0);
-                DataSupport.updateAll(UsualCity.class,values,"isLoveCity=?","1");
+                values.put("isLoveCity", 0);
+                DataSupport.updateAll(UsualCity.class, values, "isLoveCity=?", "1");
 
                 city.setLoveCity(1);
                 city.save();
             }
         });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        //layoutManager.setOrientation();
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mUsualCityAdapter);
     }
@@ -152,25 +135,20 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         hourlyLayout = findViewById(R.id.ll_hourly_layout);
         aqiText = findViewById(R.id.tv_aqi);
         pm25Text = findViewById(R.id.tv_pm25);
-        comfortText = findViewById(R.id.tv_comfort);
-        carWashText = findViewById(R.id.tv_car_wash);
-        sportText = findViewById(R.id.tv_sport);
-        airSugText = findViewById(R.id.tv_air);
-        drsgText = findViewById(R.id.tv_drsg);
-        fluText = findViewById(R.id.tv_flu);
-        travText = findViewById(R.id.tv_trav);
-        uvText = findViewById(R.id.tv_uv);
         pm10 = findViewById(R.id.tv_pm10);
         airQuality = findViewById(R.id.tv_air_quality);
         nowWind = findViewById(R.id.tv_now_wind);
 
         imageBg = findViewById(R.id.iv_bg_pic);
+        lifeStyleLayout = findViewById(R.id.ll_life_style_layout);
+        weatherAiqLayout = findViewById(R.id.fl_weather_aqi_layout);
         loadDataAndShow();
         sr_pull_fresh.setColorSchemeResources(R.color.colorPrimary);
         sr_pull_fresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 requestWeather(mWeatherId);
+                requestAqi();
             }
         });
     }
@@ -179,14 +157,22 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString(mWeatherId, null);
         if (weatherString != null) {
-            Weather weather = GsonUtil.handleWeatherResponse(weatherString);
+            Heweather6 weather = GsonUtil.handleWeatherResponse(weatherString);
             showWeatherInfo(weather);
         } else {
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(mWeatherId);
         }
 
-        String imageBgKey = prefs.getString("imageBgKey", null);
+        String aiqStr = prefs.getString("aiq" + mWeatherId, null);
+        if(aiqStr==null){
+            requestAqi();
+        }else{
+            com.wjk.jweather.airbeen.Heweather6 aiq6 = GsonUtil.handleAiqResponse(aiqStr);
+            showAiqInfo(aiq6);
+        }
+
+      /*  String imageBgKey = prefs.getString("imageBgKey", null);
         String todayImageKey = new Date().getDate() + getIntent().getStringExtra("weather_id");
         if (imageBgKey != null && imageBgKey.equals(todayImageKey)) {
             String imageBgUrl = prefs.getString("imageBg", null);
@@ -197,7 +183,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             }
         } else {
             loadImageBg();
-        }
+        }*/
     }
 
     @Override
@@ -210,7 +196,6 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 Intent intent = new Intent(this, LocateSelectActivity.class);
                 intent.putExtra("add_city", 1);
                 startActivity(intent);
-                //startActivityForResult(intent,1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -219,14 +204,14 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.tool_bar_menu,menu);
+        getMenuInflater().inflate(R.menu.tool_bar_menu, menu);
         return true;
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         boolean fromChooseArea = intent.getBooleanExtra("from_choose_area", false);
-        if(fromChooseArea){
+        if (fromChooseArea) {
             mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
             mWeatherId = intent.getStringExtra("weather_id");
             loadDataAndShow();
@@ -235,9 +220,18 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void requestWeather(final String weatherId) {
-        String url = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=13545e3a0d9b4ea0be767bb12e0707e5";
-        String url5 = "https://free-api.heweather.com/v5/weather?city=" + weatherId + "&key=13545e3a0d9b4ea0be767bb12e0707e5";
-        HttpUtil.sendRequest(url5, new Callback() {
+        String url6 = AppConfig.commonWeatherUrl + "?location=" + weatherId + "&key=" + BuildConfig.appKey;
+        /*HashMap<String,String> params = new HashMap<>();
+        params.put("location",weatherId);
+        params.put("key",BuildConfig.appKey);
+        try {
+            String signature = ParamEncode.getSignature(params, BuildConfig.APPLICATION_ID);
+            url5 = "https://free-api.heweather.com/s6/weather?sign="+signature;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+        HttpUtil.sendRequest(url6, new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -246,6 +240,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                         Toast.makeText(WeatherActivity.this,
                                 "request weather info failed..", Toast.LENGTH_SHORT).show();
                         sr_pull_fresh.setRefreshing(false);
+                        setBg("");
                     }
                 });
             }
@@ -253,8 +248,8 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onResponse(Response response) throws IOException {
                 String responseText = response.body().string();
-                final Weather weather = GsonUtil.handleWeatherResponse(responseText);
-                if (weather != null && "ok".equals(weather.status)) {
+                final Heweather6 weather = GsonUtil.handleWeatherResponse(responseText);
+                if (weather != null && "ok".equals(weather.getStatus())) {
                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
                             (WeatherActivity.this).edit();
                     editor.putString(weatherId, responseText);
@@ -263,14 +258,14 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (weather != null && "ok".equals(weather.status)) {
+                        if (weather != null && "ok".equals(weather.getStatus())) {
                             showWeatherInfo(weather);
                             if (sr_pull_fresh.isRefreshing()) {
                                 Toast.makeText(WeatherActivity.this,
                                         "更新成功！", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(WeatherActivity.this,weather.status,
+                            Toast.makeText(WeatherActivity.this, weather.getStatus(),
                                     Toast.LENGTH_SHORT).show();
                         }
                         sr_pull_fresh.setRefreshing(false);
@@ -278,26 +273,52 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 });
             }
         });
-        loadImageBg();
+        //loadImageBg();
     }
 
-    private void setToolBarTitle(String title){
+    private void setBg(String state) {
+        int bgId = R.mipmap.default_bg;
+        if (state.contains("晴")) {
+            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            if (hour > 18) {
+                bgId = R.mipmap.sunny_night;
+            } else {
+                bgId = R.mipmap.sunny;
+            }
+        } else if (state.equals("多云")) {
+            bgId = R.mipmap.cloudy;
+        } else if (state.equals("雾")) {
+            bgId = R.mipmap.frog;
+        } else if (state.equals("雨")) {
+            bgId = R.mipmap.rainy;
+        } else if (state.equals("雪")) {
+            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            if (hour > 18) {
+                bgId = R.mipmap.snow_night;
+            } else {
+                bgId = R.mipmap.snow;
+            }
+        }
+        Glide.with(WeatherActivity.this).load(bgId).into(imageBg);
+    }
+
+    private void setToolBarTitle(String title) {
         ActionBar bar = getSupportActionBar();
-        if(bar!=null){
+        if (bar != null) {
             bar.setTitle(title);
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private void showWeatherInfo(Weather weather) {
-        setToolBarTitle(weather.basic.cityName);
-        titleUpdateTime.setText("更新时间:" + weather.basic.update.updateTime.split(" ")[1]);
-        degreeText.setText(weather.now.temperature + "℃");
-        weatherInfoText.setText(weather.now.more.info);
-        nowWind.setText(weather.now.wind.direction+"-"+weather.now.wind.level);
-
+    private void showWeatherInfo(Heweather6 weather) {
+        setToolBarTitle(weather.getBasic().getAdminArea() + " " + weather.getBasic().getLocation());
+        titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
+        degreeText.setText(weather.getNow().getTmp() + "℃");
+        weatherInfoText.setText(weather.getNow().getCondTxt());
+        setBg(weather.getNow().getCondTxt());
+        nowWind.setText(weather.getNow().getWindDir() + "-" + weather.getNow().getWindSc());
         forecastLayout.removeAllViews();
-        for (Forecast forecast : weather.forecastList) {
+        for (DailyForecast forecast : weather.getDailyForecast()) {
             View inflate = LayoutInflater.from(this)
                     .inflate(R.layout.layout_weather_forecast_item,
                             forecastLayout, false);
@@ -305,85 +326,77 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             TextView info = inflate.findViewById(R.id.tv_info);
             TextView temp = inflate.findViewById(R.id.tv_temp);
             TextView wind = inflate.findViewById(R.id.tv_wind);
-            date.setText(forecast.date);
-            info.setText(forecast.more.txt_n+"-"+forecast.more.txt_d);
-            temp.setText(forecast.tempreature.min+ "℃"+"-"+forecast.tempreature.max+ "℃");
-            wind.setText(forecast.wind.direction+"-"+forecast.wind.level);
+            date.setText(forecast.getDate().toString());
+            info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
+            temp.setText(forecast.getTmpMin() + "℃" + "-" + forecast.getTmpMax() + "℃");
+            wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
             forecastLayout.addView(inflate);
         }
-
         hourlyLayout.removeAllViews();
-        for(HourForecast forecast:weather.hourlyList){
+        for (Hourly forecast : weather.getHourly()) {
             View inflate = LayoutInflater.from(this).inflate(R.layout.layout_weather_forecast_item,
                     forecastLayout, false);
             TextView date = inflate.findViewById(R.id.tv_date);
             TextView info = inflate.findViewById(R.id.tv_info);
             TextView temp = inflate.findViewById(R.id.tv_temp);
             TextView wind = inflate.findViewById(R.id.tv_wind);
-            date.setText(forecast.date.split(" ")[1]);
-            info.setText(forecast.more.info);
-            temp.setText(forecast.tempreature+ "℃");
-            wind.setText(forecast.wind.direction+"-"+forecast.wind.level);
+            date.setText(forecast.getTime().split(" ")[1]);
+            info.setText(forecast.getCondTxt());
+            temp.setText(forecast.getTmp() + "℃");
+            wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
             hourlyLayout.addView(inflate);
         }
-
-        if (weather.aqi != null) {
-            aqiText.setText(weather.aqi.city.aqi);
-            pm25Text.setText(weather.aqi.city.pm25);
-            pm10.setText(weather.aqi.city.pm10);
-            airQuality.setText(weather.aqi.city.quality);
-        } else {
-            aqiText.setText("暂无");
-            pm25Text.setText("暂无");
+        for (int i = 0; i < weather.getLifestyle().size(); i++) {
+            String type = weather.getLifestyle().get(i).getType();
+            String typeName = LifestyleMap.styleVales.get(type);
+            String text = typeName + "：" + weather.getLifestyle().get(i).getBrf() + "\n" + weather.getLifestyle().get(i).getTxt();
+            TextView itemView = (TextView) lifeStyleLayout.getChildAt(i + 1);
+            itemView.setText(text);
         }
-
-        String comfort = "舒适度：" + weather.suggestion.comfort.brf+"\n"+weather.suggestion.comfort.info;
-        String carWash = "洗车指数："  + weather.suggestion.carWash.brf+"\n"+ weather.suggestion.carWash.info;
-        String sport = "运动建议："  + weather.suggestion.sport.brf+"\n"+ weather.suggestion.sport.info;
-        String drsg = "穿衣建议："+weather.suggestion.dressSuggestion.brf+"\n"+ weather.suggestion.dressSuggestion.info;
-        String flu = "感冒指数："+weather.suggestion.flu.brf+"\n"+ weather.suggestion.flu.info;
-        String trav = "旅游指数："+weather.suggestion.trav.brf+"\n"+ weather.suggestion.trav.info;
-        String uv = "紫外线："+weather.suggestion.uv.brf+"\n"+ weather.suggestion.uv.info;
-        String airSug = "空气质量："+weather.suggestion.air.brf+"\n"+ weather.suggestion.air.info;
-        comfortText.setText(comfort);
-        carWashText.setText(carWash);
-        sportText.setText(sport);
-        drsgText.setText(drsg);
-        fluText.setText(flu);
-        travText.setText(trav);
-        uvText.setText(uv);
-        airSugText.setText(airSug);
-
-
         weatherLayout.setVisibility(View.VISIBLE);
     }
 
-    private void loadImageBg() {
-        HttpUtil.sendRequest("http://guolin.tech/api/bing_pic", new Callback() {
+    /**
+     * 加载空气质量信息
+     */
+    private void requestAqi() {
+        String airUrl = AppConfig.airQualityUrl + "?location=" + mWeatherId + "&key=" + BuildConfig.appKey;
+        HttpUtil.sendRequest(airUrl, new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
             }
 
             @Override
-            public void onResponse(Response response) throws IOException {
-                final String url = response.body().string();
-                if (!TextUtils.isEmpty(url)) {
-                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
-                            (WeatherActivity.this).edit();
-                    editor.putString("imageBg", url);
-                    String imageBgKey = new Date().getDate() + getIntent().getStringExtra("weather_id");
-                    editor.putString("imageBgKey", imageBgKey);
-                    editor.apply();
-
+            public void onResponse(final Response response) throws IOException {
+                final String jsonStr = response.body().string();
+                final com.wjk.jweather.airbeen.Heweather6 aiqObj= GsonUtil.handleAiqResponse(jsonStr);
+                if (aiqObj != null && "ok".equals(aiqObj.getStatus())) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Glide.with(WeatherActivity.this).load(url).into(imageBg);
+                            showAiqInfo(aiqObj);
                         }
                     });
+
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
+                            (WeatherActivity.this).edit();
+                    editor.putString("aiq"+mWeatherId, jsonStr);
+                    editor.apply();
                 }
             }
         });
+    }
+
+    private void showAiqInfo(com.wjk.jweather.airbeen.Heweather6 aiqObj) {
+        if (aiqObj == null || aiqObj.getAirNow() == null) {
+            return;
+        }
+        AirNow airNow = aiqObj.getAirNow();
+        aqiText.setText(airNow.getAirCity().getQlty());
+        pm25Text.setText(airNow.getAirCity().getPm25());
+        pm10.setText(airNow.getAirCity().getPm10());
+        airQuality.setText(airNow.getAirCity().getAqi());
+        weatherAiqLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -393,9 +406,9 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }else{
+        } else {
             super.onBackPressed();
         }
     }

@@ -1,152 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fl_weather_aqi_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/common_page_right"
-    android:background="@color/colorBgPrimary"
-    android:orientation="vertical">
+    android:visibility="gone"
+    android:layout_height="130dp">
     <!--空气质量信息-->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/common_page_right"
-        android:layout_marginStart="@dimen/common_page_right"
-        android:layout_marginTop="@dimen/common_page_right"
-        android:text="空气质量"
-        android:textColor="#fff"
-        android:textSize="@dimen/common_text_size" />
-
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/common_page_right">
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/common_page_right"
+        android:background="@color/colorBgPrimary"
+        android:orientation="horizontal"
+        android:paddingTop="38dp">
 
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
             android:layout_weight="1">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:orientation="vertical">
+                android:text="空气质量"
+                android:textColor="#fff" />
 
-                <TextView
-                    android:id="@+id/tv_air_quality"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="#fff"
-                    android:textSize="@dimen/common_text_size" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="空气质量"
-                    android:textColor="#fff" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_air_quality"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#fff"
+                android:layout_marginTop="8dp"
+                android:text="良"
+                android:textSize="@dimen/common_text_size" />
+        </LinearLayout>
 
 
-        </RelativeLayout>
-
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
             android:layout_weight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:orientation="vertical">
+                android:layout_gravity="center"
+                android:text="AQI指数"
+                android:textColor="#fff" />
+            <TextView
+                android:id="@+id/tv_aqi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#fff"
+                android:layout_marginTop="8dp"
+                android:text="115"
+                android:textSize="@dimen/common_text_size" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_aqi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="#fff"
-                    android:textSize="@dimen/aqi_text_size" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="AQI指数"
-                    android:textColor="#fff" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
             android:layout_weight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_pm25"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="#fff"
-                    android:textSize="@dimen/aqi_text_size" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="PM2.5指数"
-                    android:textColor="#fff" />
-
-            </LinearLayout>
+                android:layout_gravity="center"
+                android:text="PM2.5指数"
+                android:textColor="#fff" />
+            <TextView
+                android:id="@+id/tv_pm25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#fff"
+                android:text="120"
+                android:layout_marginTop="8dp"
+                android:textSize="@dimen/common_text_size" />
 
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
             android:layout_weight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:orientation="vertical">
+                android:layout_gravity="center"
+                android:text="PM10指数"
+                android:textColor="#fff" />
 
-                <TextView
-                    android:id="@+id/tv_pm10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="#fff"
-                    android:textSize="@dimen/aqi_text_size" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="PM10指数"
-                    android:textColor="#fff" />
-
-            </LinearLayout>
-
-
-        </RelativeLayout>
+            <TextView
+                android:id="@+id/tv_pm10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#fff"
+                android:text="102"
+                android:layout_marginTop="8dp"
+                android:textSize="@dimen/common_text_size" />
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:paddingRight="@dimen/common_page_right"
+        android:layout_margin="@dimen/common_page_right"
+        android:paddingTop="@dimen/common_page_right"
+        android:text="天气来源：和风天气"
+        android:textColor="#fff"
+        android:textSize="@dimen/small_text_size" />
+</FrameLayout>

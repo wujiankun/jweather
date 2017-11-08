@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/common_page_right"
     android:background="@color/colorBgPrimary"
+    android:id="@+id/ll_life_style_layout"
     android:orientation="vertical">
 <!--生活建议信息-->
     <TextView
