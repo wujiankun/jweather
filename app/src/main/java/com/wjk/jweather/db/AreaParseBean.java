@@ -1,13 +1,16 @@
-package com.wjk.jweather.view.temp;
+package com.wjk.jweather.db;
 
 import org.litepal.crud.DataSupport;
 
 /**
  * Created by wujiankun on 2017/11/14.
  *
+ * parse data from city-list txt file
+ *
  */
 
-public class CityParseBean extends DataSupport {
+public class AreaParseBean extends DataSupport {
+    private int id;//id是每个实体类都应该有的字段，此类中，不参与业务逻辑
 
     /*城市/地区编码	英文	中文	国家代码	国家英文	国家中文	省英文	省中文	所属上级市英文	 所属上级市中文	纬度 	经度*/
 
@@ -118,5 +121,13 @@ public class CityParseBean extends DataSupport {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

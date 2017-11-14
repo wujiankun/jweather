@@ -1,5 +1,4 @@
-﻿
-CN101010100	beijing	北京	CN	China	中国	beijing	北京	beijing	北京	39.904989	116.405285
+﻿CN101010100	beijing	北京	CN	China	中国	beijing	北京	beijing	北京	39.904989	116.405285
 CN101010200	haidian	海淀	CN	China	中国	beijing	北京	beijing	北京	39.956074	116.310316
 CN101010300	chaoyang	朝阳	CN	China	中国	beijing	北京	beijing	北京	39.921489	116.486409
 CN101010400	shunyi	顺义	CN	China	中国	beijing	北京	beijing	北京	40.128936	116.653525
