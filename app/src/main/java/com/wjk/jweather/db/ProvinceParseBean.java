@@ -2,6 +2,7 @@ package com.wjk.jweather.db;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class ProvinceParseBean extends DataSupport {
     private String countryCN;
     private String provinceEN;
     private String provinceCN;
-    private List<CityParseBean> cities;
+    private List<CityParseBean> cities = new ArrayList<>();
 
     public List<CityParseBean> getCities() {
         return cities;

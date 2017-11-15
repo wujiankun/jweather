@@ -2,6 +2,7 @@ package com.wjk.jweather.db;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,12 +16,43 @@ public class CityParseBean extends DataSupport {
    /*城市/地区编码	英文	中文	国家代码	国家英文	国家中文	省英文	省中文	所属上级市英文	 所属上级市中文	纬度 	经度*/
 
     private String areaCode;
+    private String areaCN;
+    private String areaEN;
     private String countryCode;
     private String countryEN;
     private String countryCN;
     private String provinceEN;
     private String provinceCN;
-    private List<AreaParseBean> blocks;
+    private String parentAreaEN;
+    private String parentAreaCN;
+    private double latitude;
+    private double longitude;
+    private List<AreaParseBean> blocks = new ArrayList<>();
+    private ProvinceParseBean provinceParseBean;
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public ProvinceParseBean getProvinceParseBean() {
+        return provinceParseBean;
+    }
+
+    public void setProvinceParseBean(ProvinceParseBean provinceParseBean) {
+        this.provinceParseBean = provinceParseBean;
+    }
 
     public List<AreaParseBean> getBlocks() {
         return blocks;
@@ -83,5 +115,37 @@ public class CityParseBean extends DataSupport {
 
     public void setProvinceCN(String provinceCN) {
         this.provinceCN = provinceCN;
+    }
+
+    public String getAreaCN() {
+        return areaCN;
+    }
+
+    public void setAreaCN(String areaCN) {
+        this.areaCN = areaCN;
+    }
+
+    public String getAreaEN() {
+        return areaEN;
+    }
+
+    public void setAreaEN(String areaEN) {
+        this.areaEN = areaEN;
+    }
+
+    public String getParentAreaEN() {
+        return parentAreaEN;
+    }
+
+    public void setParentAreaEN(String parentAreaEN) {
+        this.parentAreaEN = parentAreaEN;
+    }
+
+    public String getParentAreaCN() {
+        return parentAreaCN;
+    }
+
+    public void setParentAreaCN(String parentAreaCN) {
+        this.parentAreaCN = parentAreaCN;
     }
 }

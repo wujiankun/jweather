@@ -26,6 +26,7 @@ import com.squareup.okhttp.Response;
 import com.wjk.jweather.R;
 import com.wjk.jweather.db.AreaParseBean;
 import com.wjk.jweather.db.City;
+import com.wjk.jweather.db.CityParseBean;
 import com.wjk.jweather.db.County;
 import com.wjk.jweather.db.ProvinceParseBean;
 import com.wjk.jweather.db.UsualCity;
@@ -59,11 +60,11 @@ public class ChooseAreaFragment extends BaseFragment {
     private ArrayAdapter<String> mAdapter;
     private List<String> dataList = new ArrayList<>();
     private List<ProvinceParseBean> provinces;
-    private List<AreaParseBean> cities;
+    private List<CityParseBean> cities;
     private List<AreaParseBean> blocks;
 
     private ProvinceParseBean mSelectProvince;
-    private AreaParseBean mSelectCity;
+    private CityParseBean mSelectCity;
 
     private int mCurrentLevel;
 
@@ -72,11 +73,20 @@ public class ChooseAreaFragment extends BaseFragment {
     }
 
     @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            queryProvinces();
-            hideProgressDialog();
+            switch (msg.what){
+                case 1:
+                    queryProvinces();
+                    hideProgressDialog();
+                    break;
+                case 2:
+                    if(mProgressDialog!=null&&mProgressDialog.isShowing()){
+                        mProgressDialog.setMessage("解析城市数据中..."+msg.arg1+"/"+msg.arg2);
+                    }
+                    break;
+            }
         }
     };
 
@@ -146,7 +156,13 @@ public class ChooseAreaFragment extends BaseFragment {
                         break;
                     case level_city:
                         mSelectCity = cities.get(position);
-                        queryBlocks();
+                        int size = queryBlocks();
+                        if(size<1){//如果是直辖市，直接拿weatherId 转向天气界面
+                            String weatherId = mSelectCity.getAreaCode();
+                            saveArea(mSelectCity);
+                            mCurrentLevel = level_county;
+                            goWeatherActivity(weatherId);
+                        }
                         break;
                     case level_county:
                         String weatherId = blocks.get(position).getAreaCode();
@@ -193,6 +209,11 @@ public class ChooseAreaFragment extends BaseFragment {
         city.save();
     }
 
+    private void saveArea(CityParseBean mSelectCity) {
+        AreaParseBean bean = new AreaParseBean(mSelectCity);
+        saveArea(bean);
+    }
+
     private void queryProvinces() {
         mTitleTextView.setText("国内");
         mBackBtn.setVisibility(View.GONE);
@@ -210,18 +231,18 @@ public class ChooseAreaFragment extends BaseFragment {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    new CityTextParseUtil().readTextAndSaveToDb(getContext());
+                    new CityTextParseUtil().readTextAndSaveToDb(getContext(),mHandler);
                     mHandler.sendEmptyMessage(1);
                 }
             }).start();
         }
     }
 
-    private void queryBlocks() {
+    private int queryBlocks() {
         mTitleTextView.setText(mSelectCity.getParentAreaCN());
         mBackBtn.setVisibility(View.VISIBLE);
-        blocks = DataSupport.where("areaCode like ?",
-                String.valueOf(mSelectCity.getAreaCode().substring(0,9))).find(AreaParseBean.class);
+        blocks = DataSupport.where("cityparsebean_id = ?",
+                String.valueOf(mSelectCity.getId())).find(AreaParseBean.class);
         if(blocks.size()>0){
             dataList.clear();
             for(AreaParseBean c: blocks){
@@ -230,22 +251,18 @@ public class ChooseAreaFragment extends BaseFragment {
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);
             mCurrentLevel = level_county;
-        }else{
-            /*int provinceCode = mSelectProvince.getCode();
-            int cityCode = mSelectCity.getCode();
-            String url = "http://guolin.tech/api/china/"+provinceCode+"/"+cityCode;
-            queryFromServer(url,"county");*/
         }
+        return blocks.size();
     }
 
     private void queryCities() {
         mTitleTextView.setText(mSelectProvince.getProvinceCN());
         mBackBtn.setVisibility(View.VISIBLE);
-        cities = DataSupport.where("areaCode like ?",
-                String.valueOf(mSelectProvince.getAreaCode().substring(0,7))).find(AreaParseBean.class);
+        cities = DataSupport.where("provinceparsebean_id = ?",
+                String.valueOf(mSelectProvince.getId())).find(CityParseBean.class);
         if(cities.size()>0){
             dataList.clear();
-            for(AreaParseBean c:cities){
+            for(CityParseBean c:cities){
                 dataList.add(c.getParentAreaCN());
             }
             mAdapter.notifyDataSetChanged();
@@ -282,6 +299,10 @@ public class ChooseAreaFragment extends BaseFragment {
         if(mProgressDialog!=null){
             mProgressDialog.dismiss();
             mProgressDialog=null;
+        }
+        if(mHandler!=null){
+            mHandler.removeCallbacks(null);
+            mHandler = null;
         }
     }
 

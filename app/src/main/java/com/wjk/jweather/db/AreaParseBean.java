@@ -26,6 +26,35 @@ public class AreaParseBean extends DataSupport {
     private String parentAreaCN;
     private double latitude;
     private double longitude;
+    private CityParseBean cityParseBean;
+
+    public AreaParseBean(CityParseBean mSelectCity) {
+        areaCode = mSelectCity.getAreaCode();
+        areaEN = mSelectCity.getAreaEN();
+        areaCN = mSelectCity.getAreaCN();
+        countryCode = mSelectCity.getCountryCode();
+        countryEN = mSelectCity.getCountryEN();
+        countryCN = mSelectCity.getCountryCN();
+        provinceEN = mSelectCity.getProvinceEN();
+        provinceCN = mSelectCity.getProvinceCN();
+        parentAreaEN = mSelectCity.getAreaEN();
+        parentAreaCN = mSelectCity.getAreaCN();
+        latitude = mSelectCity.getLatitude();
+        longitude = mSelectCity.getLatitude();
+        cityParseBean = mSelectCity;
+    }
+
+    public AreaParseBean() {
+
+    }
+
+    public CityParseBean getCityParseBean() {
+        return cityParseBean;
+    }
+
+    public void setCityParseBean(CityParseBean cityParseBean) {
+        this.cityParseBean = cityParseBean;
+    }
 
     public String getAreaCode() {
         return areaCode;
