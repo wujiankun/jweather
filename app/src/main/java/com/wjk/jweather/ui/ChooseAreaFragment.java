@@ -263,7 +263,7 @@ public class ChooseAreaFragment extends BaseFragment {
         if(cities.size()>0){
             dataList.clear();
             for(CityParseBean c:cities){
-                dataList.add(c.getParentAreaCN());
+                dataList.add(c.getAreaCN());
             }
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);

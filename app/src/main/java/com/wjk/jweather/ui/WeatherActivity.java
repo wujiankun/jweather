@@ -311,7 +311,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
 
     @SuppressLint("SetTextI18n")
     private void showWeatherInfo(Heweather6 weather) {
-        setToolBarTitle(weather.getBasic().getAdminArea() + " " + weather.getBasic().getLocation());
+        setToolBarTitle(weather.getBasic().getLocation() + " " + weather.getBasic().getParentCity());
         titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
         degreeText.setText(weather.getNow().getTmp() + "℃");
         weatherInfoText.setText(weather.getNow().getCondTxt());
@@ -333,18 +333,23 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             forecastLayout.addView(inflate);
         }
         hourlyLayout.removeAllViews();
-        for (Hourly forecast : weather.getHourly()) {
-            View inflate = LayoutInflater.from(this).inflate(R.layout.layout_weather_forecast_item,
-                    forecastLayout, false);
-            TextView date = inflate.findViewById(R.id.tv_date);
-            TextView info = inflate.findViewById(R.id.tv_info);
-            TextView temp = inflate.findViewById(R.id.tv_temp);
-            TextView wind = inflate.findViewById(R.id.tv_wind);
-            date.setText(forecast.getTime().split(" ")[1]);
-            info.setText(forecast.getCondTxt());
-            temp.setText(forecast.getTmp() + "℃");
-            wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
-            hourlyLayout.addView(inflate);
+        hourlyLayout.setVisibility(View.GONE);
+        List<Hourly> hourly = weather.getHourly();
+        if(hourly!=null){
+            for (Hourly forecast : weather.getHourly()) {
+                View inflate = LayoutInflater.from(this).inflate(R.layout.layout_weather_forecast_item,
+                        forecastLayout, false);
+                TextView date = inflate.findViewById(R.id.tv_date);
+                TextView info = inflate.findViewById(R.id.tv_info);
+                TextView temp = inflate.findViewById(R.id.tv_temp);
+                TextView wind = inflate.findViewById(R.id.tv_wind);
+                date.setText(forecast.getTime().split(" ")[1]);
+                info.setText(forecast.getCondTxt());
+                temp.setText(forecast.getTmp() + "℃");
+                wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
+                hourlyLayout.addView(inflate);
+            }
+            hourlyLayout.setVisibility(View.VISIBLE);
         }
         for (int i = 0; i < weather.getLifestyle().size(); i++) {
             String type = weather.getLifestyle().get(i).getType();

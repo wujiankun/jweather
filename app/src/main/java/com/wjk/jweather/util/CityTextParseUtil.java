@@ -77,40 +77,26 @@ public class CityTextParseUtil {
     private void checkAndSaveNewProvince(AreaParseBean newer, AreaParseBean old) {
         if (old == null) {
             tempProvince = makeNewProvince(newer);
-            List<CityParseBean> tempCities = tempProvince.getCities();
-            CityParseBean tempCity = makeNewCity(newer);
-            List<AreaParseBean> tempBlocks = tempCity.getBlocks();
-            if(!isOnlyCity(newer)){
-                tempBlocks.add(newer);
-            }
-            tempCity.setBlocks(tempBlocks);
-            tempCities.add(tempCity);
-            tempProvince.setCities(tempCities);
             return;
         }
-        if (isSameProvince(newer,old)) {//与上一条数据属于同一个省
+        if (isSameProvince(newer,old)) {
+            //与上一条数据属于同一个省
             //再比较是不是同一个市的
-            if (isSameCity(newer,old)) {//与上一条数据属于同一个省，并且是同一个城市
+            if (isSameCity(newer,old)) {
+                //与上一条数据属于同一个省，并且是同一个城市
+                //直辖市中的区肯定有不同的市级代码,所以这里不用判断是否是直辖市
+                //拿出临时省里的城市列表，取出最后一个城市，往这个最后城市中添加区，并保存
                 List<CityParseBean> tempCities = tempProvince.getCities();
                 CityParseBean tempCity = tempCities.get(tempCities.size() - 1);
                 List<AreaParseBean> tempBlocks = tempCity.getBlocks();
-                if(!isOnlyCity(newer)){//当前地区不属于直辖市，保存当前地区到block
-                    tempBlocks.add(newer);
-                }
+                tempBlocks.add(newer);
                 tempCity.setBlocks(tempBlocks);
                 tempCities.remove(tempCities.size() - 1);
                 tempCities.add(tempCity);
                 tempProvince.setCities(tempCities);
-
             } else {
                 //与上一条数据属于同一个省，但不是同一个城市
                 List<CityParseBean> tempCities = tempProvince.getCities();
-                CityParseBean tempCity = makeNewCity(newer);
-                List<AreaParseBean> tempBlocks = tempCity.getBlocks();
-                if(!isOnlyCity(newer)){
-                    tempBlocks.add(newer);
-                }
-                tempCity.setBlocks(tempBlocks);
                 tempCities.add(makeNewCity(newer));
                 tempProvince.setCities(tempCities);
             }
@@ -175,11 +161,11 @@ public class CityTextParseUtil {
         c.setParentAreaEN(n.getParentAreaEN());
         c.setLatitude(n.getLatitude());
         c.setLongitude(n.getLongitude());
-        /*if(!isOnlyCity(n)){
+        if(!isOnlyCity(n)){//如果不是直辖，造一个区出来
             List<AreaParseBean> blocks = c.getBlocks();
             blocks.add(n);
             c.setBlocks(blocks);
-        }*/
+        }
         return c;
     }
 
@@ -191,9 +177,9 @@ public class CityTextParseUtil {
         p.setCountryEN(n.getCountryEN());
         p.setProvinceCN(n.getProvinceCN());
         p.setProvinceEN(n.getProvinceEN());
-      /*  List<CityParseBean> cities = p.getCities();
+        List<CityParseBean> cities = p.getCities();
         cities.add(makeNewCity(n));
-        p.setCities(cities);*/
+        p.setCities(cities);
         return p;
     }
     private String getCode(InputStream is) {
