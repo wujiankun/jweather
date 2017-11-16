@@ -9,34 +9,26 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.wjk.jweather.R;
+import com.wjk.jweather.adapter.CitySelectAdapter;
 import com.wjk.jweather.db.AreaParseBean;
-import com.wjk.jweather.db.City;
+import com.wjk.jweather.db.BaseAreaParseBean;
 import com.wjk.jweather.db.CityParseBean;
-import com.wjk.jweather.db.County;
 import com.wjk.jweather.db.ProvinceParseBean;
 import com.wjk.jweather.db.UsualCity;
+import com.wjk.jweather.listener.CityChangeListener;
 import com.wjk.jweather.util.CityTextParseUtil;
-import com.wjk.jweather.util.GsonUtil;
-import com.wjk.jweather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,9 +48,9 @@ public class ChooseAreaFragment extends BaseFragment {
     private ProgressDialog mProgressDialog;
     private TextView mTitleTextView;
     private Button mBackBtn;
-    private ListView mListView;
-    private ArrayAdapter<String> mAdapter;
-    private List<String> dataList = new ArrayList<>();
+    private RecyclerView mListView;
+    private CitySelectAdapter mAdapter;
+    private List<BaseAreaParseBean> dataList = new ArrayList<>();
     private List<ProvinceParseBean> provinces;
     private List<CityParseBean> cities;
     private List<AreaParseBean> blocks;
@@ -83,7 +75,7 @@ public class ChooseAreaFragment extends BaseFragment {
                     break;
                 case 2:
                     if(mProgressDialog!=null&&mProgressDialog.isShowing()){
-                        mProgressDialog.setMessage("解析城市数据中..."+msg.arg1+"/"+msg.arg2);
+                        mProgressDialog.setMessage("为您准备城市数据中..."+msg.arg1+"/"+msg.arg2);
                     }
                     break;
             }
@@ -125,7 +117,7 @@ public class ChooseAreaFragment extends BaseFragment {
                         loveCity = city;
                     }
                 }
-                goWeatherActivity(loveCity.getWeatherId());
+                goWeatherActivity(loveCity);
             }
         }
     }
@@ -137,18 +129,9 @@ public class ChooseAreaFragment extends BaseFragment {
         mTitleTextView = layout.findViewById(R.id.title_text);
         mBackBtn = layout.findViewById(R.id.back_btn);
         mListView = layout.findViewById(R.id.list_view);
-        mAdapter = new ArrayAdapter<>(getContext(),R.layout.item_area,dataList);
-        mListView.setAdapter(mAdapter);
-        return layout;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //设置listview与button的点击事件
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mAdapter = new CitySelectAdapter(dataList, new CityChangeListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            public void onCityChange(BaseAreaParseBean city, int position) {
                 switch (mCurrentLevel){
                     case level_province:
                         mSelectProvince = provinces.get(position);
@@ -158,21 +141,25 @@ public class ChooseAreaFragment extends BaseFragment {
                         mSelectCity = cities.get(position);
                         int size = queryBlocks();
                         if(size<1){//如果是直辖市，直接拿weatherId 转向天气界面
-                            String weatherId = mSelectCity.getAreaCode();
                             saveArea(mSelectCity);
                             mCurrentLevel = level_county;
-                            goWeatherActivity(weatherId);
+                            goWeatherActivity(mSelectCity);
                         }
                         break;
                     case level_county:
-                        String weatherId = blocks.get(position).getAreaCode();
                         saveArea(blocks.get(position));
-                        goWeatherActivity(weatherId);
+                        goWeatherActivity(blocks.get(position));
                         break;
                 }
             }
         });
+        mListView.setAdapter(mAdapter);
+        return layout;
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,45 +173,47 @@ public class ChooseAreaFragment extends BaseFragment {
                 }
             }
         });
+        RecyclerView.LayoutManager manager = new GridLayoutManager(getContext(),3);
+        mListView.setLayoutManager(manager);
         queryProvinces();
     }
 
-    private void goWeatherActivity(String weatherId) {
+    private void goWeatherActivity(BaseAreaParseBean city) {
         Intent intent = new Intent(getActivity(),WeatherActivity.class);
-        intent.putExtra("weather_id",weatherId);
+        intent.putExtra("weather_id",city.getAreaCode());
         intent.putExtra("from_choose_area",true);
         startActivity(intent);
         getActivity().finish();
     }
 
-    private void saveArea(AreaParseBean county) {
+    private void saveArea(BaseAreaParseBean county) {
+        //先查询常用目标地址是否已加入收藏
+        List<UsualCity> usualCities = DataSupport.where("areacode=?", county.getAreaCode())
+                .find(UsualCity.class);
+        if(usualCities.size()>0){
+            return;
+        }
         ContentValues values = new ContentValues();
         values.put("isLoveCity",0);
-        DataSupport.updateAll(UsualCity.class,values,"isLoveCity=?","1");
+        //查询出默认城市的id然后修改为非默认
+        usualCities = DataSupport.where("isLoveCity=?", "1")
+                .find(UsualCity.class);
+        if(usualCities.size()>0){
+            DataSupport.update(UsualCity.class,values,usualCities.get(0).getId());
+        }
         UsualCity city = new UsualCity();
-        city.setCountyName(county.getAreaCN());
-        city.setWeatherId(county.getAreaCode());
+        city.copyValueFrom(county);
         city.setLoveCity(1);
-        city.setProvinceName(county.getProvinceCN());
         city.save();
     }
-
-    private void saveArea(CityParseBean mSelectCity) {
-        AreaParseBean bean = new AreaParseBean(mSelectCity);
-        saveArea(bean);
-    }
-
     private void queryProvinces() {
         mTitleTextView.setText("国内");
         mBackBtn.setVisibility(View.GONE);
         provinces = DataSupport.findAll(ProvinceParseBean.class);
         if(provinces.size()>0){
             dataList.clear();
-            for(ProvinceParseBean p:provinces){
-                dataList.add(p.getProvinceCN());
-            }
-            mAdapter.notifyDataSetChanged();
-            mListView.setSelection(0);
+            dataList.addAll(provinces);
+            mAdapter.setIsProvince(true);
             mCurrentLevel = level_province;
         }else{
             showProgressDialog();
@@ -245,11 +234,8 @@ public class ChooseAreaFragment extends BaseFragment {
                 String.valueOf(mSelectCity.getId())).find(AreaParseBean.class);
         if(blocks.size()>0){
             dataList.clear();
-            for(AreaParseBean c: blocks){
-                dataList.add(c.getAreaCN());
-            }
-            mAdapter.notifyDataSetChanged();
-            mListView.setSelection(0);
+            dataList.addAll(blocks);
+            mAdapter.setIsProvince(false);
             mCurrentLevel = level_county;
         }
         return blocks.size();
@@ -262,16 +248,9 @@ public class ChooseAreaFragment extends BaseFragment {
                 String.valueOf(mSelectProvince.getId())).find(CityParseBean.class);
         if(cities.size()>0){
             dataList.clear();
-            for(CityParseBean c:cities){
-                dataList.add(c.getAreaCN());
-            }
-            mAdapter.notifyDataSetChanged();
-            mListView.setSelection(0);
+            dataList.addAll(cities);
+            mAdapter.setIsProvince(false);
             mCurrentLevel = level_city;
-        }else{
-           /* int provinceCode = mSelectProvince.getCode();
-            String url = "http://guolin.tech/api/china/"+provinceCode;
-            queryFromServer(url,"city");*/
         }
     }
 
@@ -279,7 +258,6 @@ public class ChooseAreaFragment extends BaseFragment {
     private void showProgressDialog() {
         if(mProgressDialog==null){
             mProgressDialog = new ProgressDialog(getContext());
-            mProgressDialog.setMessage("解析城市数据中...");
             mProgressDialog.setCanceledOnTouchOutside(false);
         }
         mProgressDialog.show();

@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="@dimen/common_page_right"
-    android:background="@color/colorBgPrimary"
-    android:orientation="vertical">
-    <!--每小时天气信息的布局-->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/common_page_right"
-        android:layout_marginTop="@dimen/common_page_right"
-        android:textColor="#fff"
-        android:text="时段预报"
-        android:textSize="@dimen/common_text_size" />
-
+    app:cardBackgroundColor="@color/colorBgPrimary"
+    app:cardElevation="0dp"
+    >
     <LinearLayout
-        android:id="@+id/ll_hourly_layout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!--每小时天气信息的布局-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/common_page_right"
+            android:layout_marginTop="@dimen/common_page_right"
+            android:textColor="#fff"
+            android:text="时段预报"
+            android:textSize="@dimen/common_text_size" />
+
+        <LinearLayout
+            android:id="@+id/ll_hourly_layout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </LinearLayout>
 
     </LinearLayout>
-
-</LinearLayout>
+</android.support.v7.widget.CardView>

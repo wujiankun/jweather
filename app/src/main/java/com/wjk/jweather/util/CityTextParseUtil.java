@@ -10,14 +10,11 @@ import com.wjk.jweather.db.AreaParseBean;
 import com.wjk.jweather.db.CityParseBean;
 import com.wjk.jweather.db.ProvinceParseBean;
 
-import org.litepal.crud.DataSupport;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +23,9 @@ import java.util.List;
  */
 
 public class CityTextParseUtil {
-
+    private Handler mHandler;
     public void readTextAndSaveToDb(Context context, Handler mHandler) {
+        this.mHandler = mHandler;
         AssetManager am = context.getAssets();
         try {
             InputStream is = am.open("city-list.txt");
@@ -38,9 +36,9 @@ public class CityTextParseUtil {
             String firstLine =  br.readLine();
             //剪掉txt文档的第一个无用字符
             firstLine = firstLine.substring(1,firstLine.length());
-            parseTextByLine(firstLine,mHandler);
+            parseTextByLine(firstLine);
             while ((line = br.readLine()) != null) {
-                parseTextByLine(line,mHandler);
+                parseTextByLine(line);
             }
             saveProvinceToDb(tempProvince);
             tempProvince=null;
@@ -48,29 +46,13 @@ public class CityTextParseUtil {
             e.printStackTrace();
         }
     }
-    private int i=1;
     private AreaParseBean tempBean = null;
-    private void parseTextByLine(String line,Handler mHandler) {
+    private void parseTextByLine(String line) {
         String[] s = line.split("\t");
         AreaParseBean bean = new AreaParseBean();
-        bean.setAreaCode(s[0]);
-        bean.setAreaEN(s[1]);
-        bean.setAreaCN(s[2]);
-        bean.setCountryCode(s[3]);
-        bean.setCountryEN(s[4]);
-        bean.setCountryCN(s[5]);
-        bean.setProvinceEN(s[6]);
-        bean.setProvinceCN(s[7]);
-        bean.setParentAreaEN(s[8]);
-        bean.setParentAreaCN(s[9]);
-        bean.setLatitude(Double.parseDouble(s[10]));
-        bean.setLongitude(Double.parseDouble(s[11]));
+        bean.initFromStrArr(s);
         checkAndSaveNewProvince(bean, tempBean);
         tempBean = bean;
-        i++;
-        Message msg = mHandler.obtainMessage(2);
-        msg.arg1 = i;msg.arg2 = 3181;
-        mHandler.sendMessage(msg);
     }
 
     private ProvinceParseBean tempProvince;
@@ -106,8 +88,14 @@ public class CityTextParseUtil {
             tempProvince = makeNewProvince(newer);
         }
     }
-
-
+    private int i;
+    private void sendProgressMsg(int i) {
+        if(mHandler!=null){
+            Message msg = mHandler.obtainMessage(2);
+            msg.arg1 = i;msg.arg2 = 3181;
+            mHandler.sendMessage(msg);
+        }
+    }
 
     //CN10101 01 00
     private final int diffStart = 0, diffEnd = 7;
@@ -138,29 +126,16 @@ public class CityTextParseUtil {
             List<AreaParseBean> blocks = c.getBlocks();
             for(AreaParseBean a:blocks){
                 a.save();
-                Log.e("wjk","save block:"+a.getProvinceCN()+" "+a.getParentAreaCN()+" "+a.getAreaCN());
+                sendProgressMsg(i++);
             }
             c.save();
-            Log.e("wjk","save city:"+c.getProvinceCN()+" "+" "+c.getParentAreaCN());
         }
         bean.save();
-        Log.e("wjk","save province:"+bean.getProvinceCN()+" ");
     }
 
     private CityParseBean makeNewCity(AreaParseBean n) {
         CityParseBean c = new CityParseBean();
-        c.setAreaCN(n.getAreaCN());
-        c.setAreaEN(n.getAreaEN());
-        c.setAreaCode(n.getAreaCode());
-        c.setCountryCN(n.getCountryCN());
-        c.setCountryCode(n.getCountryCode());
-        c.setCountryEN(n.getCountryEN());
-        c.setProvinceCN(n.getProvinceCN());
-        c.setProvinceEN(n.getProvinceEN());
-        c.setParentAreaCN(n.getParentAreaCN());
-        c.setParentAreaEN(n.getParentAreaEN());
-        c.setLatitude(n.getLatitude());
-        c.setLongitude(n.getLongitude());
+        c.copyValueFrom(n);
         if(!isOnlyCity(n)){//如果不是直辖，造一个区出来
             List<AreaParseBean> blocks = c.getBlocks();
             blocks.add(n);
@@ -171,12 +146,7 @@ public class CityTextParseUtil {
 
     private ProvinceParseBean makeNewProvince(AreaParseBean n) {
         ProvinceParseBean p = new ProvinceParseBean();
-        p.setAreaCode(n.getAreaCode());
-        p.setCountryCN(n.getCountryCN());
-        p.setCountryCode(n.getCountryCode());
-        p.setCountryEN(n.getCountryEN());
-        p.setProvinceCN(n.getProvinceCN());
-        p.setProvinceEN(n.getProvinceEN());
+        p.copyValueFrom(n);
         List<CityParseBean> cities = p.getCities();
         cities.add(makeNewCity(n));
         p.setCities(cities);

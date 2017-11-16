@@ -12,20 +12,20 @@ import java.util.List;
 public class AirNow {
 
     @JSONField(name="air_city")
-    private AirCity airCity;
+    private AirNowCity airCity;
     @JSONField(name="air_station")
-    private List<AirStation> airStation;
-    public void setAirCity(AirCity airCity) {
+    private List<AirNowStation> airStation;
+    public void setAirCity(AirNowCity airCity) {
          this.airCity = airCity;
      }
-     public AirCity getAirCity() {
+     public AirNowCity getAirCity() {
          return airCity;
      }
 
-    public void setAirStation(List<AirStation> airStation) {
+    public void setAirStation(List<AirNowStation> airStation) {
          this.airStation = airStation;
      }
-     public List<AirStation> getAirStation() {
+     public List<AirNowStation> getAirStation() {
          return airStation;
      }
 

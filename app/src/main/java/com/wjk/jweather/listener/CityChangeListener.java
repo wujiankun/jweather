@@ -1,11 +1,12 @@
 package com.wjk.jweather.listener;
 
-import com.wjk.jweather.db.UsualCity;
+import com.wjk.jweather.db.BaseAreaParseBean;
 
 /**
- * Created by wujiankun on 2017/10/17.
+ * Created by wujiankun on 2017/10/17.\
+ *
  */
 
 public interface CityChangeListener {
-    void onCityChange(UsualCity city);
+    void onCityChange(BaseAreaParseBean city, int position);
 }

@@ -34,7 +34,7 @@ public class UsualCityAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View view) {
                 int position = holder.getAdapterPosition();
-                listener.onCityChange(cities.get(position));
+                listener.onCityChange(cities.get(position), position);
             }
         });
         return holder;
@@ -44,9 +44,11 @@ public class UsualCityAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         MyHolder myHolder = (MyHolder) holder;
-        String countyName = cities.get(position).getCountyName();
-        String provinceName = cities.get(position).getProvinceName();
-        myHolder.cityNameView.setText(provinceName+"-"+countyName);
+        UsualCity city = cities.get(position);
+        String cityName = city.getParentAreaCN();
+        String blockName = city.getAreaCN();
+        String append = city.isLoveCity()==1?"* ":"";
+        myHolder.cityNameView.setText(append+cityName+"·"+blockName);
     }
 
     @Override

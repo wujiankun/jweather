@@ -1,7 +1,6 @@
 package com.wjk.jweather.ui;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,28 +25,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.wjk.jweather.BuildConfig;
 import com.wjk.jweather.R;
 import com.wjk.jweather.adapter.UsualCityAdapter;
-import com.wjk.jweather.airbeen.AirNow;
+import com.wjk.jweather.airbeen.AirNowCity;
+import com.wjk.jweather.db.BaseAreaParseBean;
 import com.wjk.jweather.db.UsualCity;
+import com.wjk.jweather.listener.CityChangeListener;
+import com.wjk.jweather.util.AppConfig;
+import com.wjk.jweather.util.JsonUtil;
+import com.wjk.jweather.util.HttpUtil;
 import com.wjk.jweather.weatherbeen.DailyForecast;
 import com.wjk.jweather.weatherbeen.Heweather6;
 import com.wjk.jweather.weatherbeen.Hourly;
 import com.wjk.jweather.weatherbeen.LifestyleMap;
-import com.wjk.jweather.listener.CityChangeListener;
-import com.wjk.jweather.util.AppConfig;
-import com.wjk.jweather.util.GsonUtil;
-import com.wjk.jweather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity implements View.OnClickListener {
@@ -94,19 +93,12 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         final List<UsualCity> cities = DataSupport.findAll(UsualCity.class);
         mUsualCityAdapter = new UsualCityAdapter(cities, new CityChangeListener() {
             @Override
-            public void onCityChange(UsualCity city) {
-                mWeatherId = city.getWeatherId();
+            public void onCityChange(BaseAreaParseBean city, int position) {
+                mWeatherId = city.getAreaCode();
                 requestWeather(mWeatherId);
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawers();
                 }
-
-                ContentValues values = new ContentValues();
-                values.put("isLoveCity", 0);
-                DataSupport.updateAll(UsualCity.class, values, "isLoveCity=?", "1");
-
-                city.setLoveCity(1);
-                city.save();
             }
         });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -157,7 +149,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString(mWeatherId, null);
         if (weatherString != null) {
-            Heweather6 weather = GsonUtil.handleWeatherResponse(weatherString);
+            Heweather6 weather = JsonUtil.handleWeatherResponse(weatherString);
             showWeatherInfo(weather);
         } else {
             weatherLayout.setVisibility(View.INVISIBLE);
@@ -168,7 +160,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         if(aiqStr==null){
             requestAqi();
         }else{
-            com.wjk.jweather.airbeen.Heweather6 aiq6 = GsonUtil.handleAiqResponse(aiqStr);
+            com.wjk.jweather.airbeen.Heweather6 aiq6 = JsonUtil.handleAiqResponse(aiqStr);
             showAiqInfo(aiq6);
         }
 
@@ -248,7 +240,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onResponse(Response response) throws IOException {
                 String responseText = response.body().string();
-                final Heweather6 weather = GsonUtil.handleWeatherResponse(responseText);
+                final Heweather6 weather = JsonUtil.handleWeatherResponse(responseText);
                 if (weather != null && "ok".equals(weather.getStatus())) {
                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
                             (WeatherActivity.this).edit();
@@ -326,7 +318,8 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             TextView info = inflate.findViewById(R.id.tv_info);
             TextView temp = inflate.findViewById(R.id.tv_temp);
             TextView wind = inflate.findViewById(R.id.tv_wind);
-            date.setText(forecast.getDate().toString());
+            Date theDate = forecast.getDate();
+            date.setText(theDate.getMonth()+"-"+theDate.getDate()+" 周"+theDate.getDay());
             info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
             temp.setText(forecast.getTmpMin() + "℃" + "-" + forecast.getTmpMax() + "℃");
             wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
@@ -374,7 +367,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onResponse(final Response response) throws IOException {
                 final String jsonStr = response.body().string();
-                final com.wjk.jweather.airbeen.Heweather6 aiqObj= GsonUtil.handleAiqResponse(jsonStr);
+                final com.wjk.jweather.airbeen.Heweather6 aiqObj= JsonUtil.handleAiqResponse(jsonStr);
                 if (aiqObj != null && "ok".equals(aiqObj.getStatus())) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -393,14 +386,14 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void showAiqInfo(com.wjk.jweather.airbeen.Heweather6 aiqObj) {
-        if (aiqObj == null || aiqObj.getAirNow() == null) {
+        if (aiqObj == null || aiqObj.getAirNowCity() == null) {
             return;
         }
-        AirNow airNow = aiqObj.getAirNow();
-        aqiText.setText(airNow.getAirCity().getQlty());
-        pm25Text.setText(airNow.getAirCity().getPm25());
-        pm10.setText(airNow.getAirCity().getPm10());
-        airQuality.setText(airNow.getAirCity().getAqi());
+        AirNowCity airNow = aiqObj.getAirNowCity();
+        aqiText.setText(airNow.getAqi());
+        pm25Text.setText(airNow.getPm25());
+        pm10.setText(airNow.getPm10());
+        airQuality.setText(airNow.getQlty());
         weatherAiqLayout.setVisibility(View.VISIBLE);
     }
 
