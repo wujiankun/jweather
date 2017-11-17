@@ -1,7 +1,7 @@
 /**
   * Copyright 2017 aTool.org 
   */
-package com.wjk.jweather.airbeen;
+package com.wjk.jweather.weather.bean.airbeen;
 
 import com.alibaba.fastjson.annotation.JSONField;
 

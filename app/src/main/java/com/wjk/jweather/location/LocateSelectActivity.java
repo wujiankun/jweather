@@ -1,10 +1,12 @@
-package com.wjk.jweather.ui;
+package com.wjk.jweather.location;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.wjk.jweather.R;
+import com.wjk.jweather.base.BaseFragment;
+
 
 public class LocateSelectActivity extends AppCompatActivity implements ChooseAreaFragment.OnFragmentInteractionListener {
 

@@ -1,4 +1,4 @@
-package com.wjk.jweather.adapter;
+package com.wjk.jweather.weather.adapter;
 
 import android.annotation.SuppressLint;
 import android.support.v7.widget.RecyclerView;

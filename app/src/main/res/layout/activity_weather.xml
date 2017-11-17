@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.wjk.jweather.ui.WeatherActivity">
+    tools:context="com.wjk.jweather.weather.ui.WeatherActivity">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -26,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <android.support.v7.widget.Toolbar
+                android:layout_marginTop="@dimen/margin_toolbar_top"
                 android:id="@+id/tool_bar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -60,6 +61,11 @@
                     <include layout="@layout/layout_weather_forecast" />
                     <include layout="@layout/layout_weather_suggestion" />
                    <!-- <include layout="@layout/layout_weather_alarm" />-->
+                    <com.wjk.jweather.view.LoadingView
+                        android:id="@+id/loading_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone" />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
         </android.support.v4.widget.SwipeRefreshLayout>

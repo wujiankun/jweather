@@ -1,20 +1,16 @@
 /**
   * Copyright 2017 aTool.org 
   */
-package com.wjk.jweather.airbeen;
+package com.wjk.jweather.weather.bean.airbeen;
 
 import com.alibaba.fastjson.annotation.JSONField;
 /**
  * Auto-generated: 2017-11-08 15:3:56
  */
-public class AirNowStation {
-    @JSONField(name="air_sta")
-    private String airSta;
+public class AirNowCity {
+
     private String aqi;
-    private String asid;
     private String co;
-    private String lat;
-    private String lon;
     private String main;
     private String no2;
     private String o3;
@@ -24,13 +20,6 @@ public class AirNowStation {
     private String pubTime;
     private String qlty;
     private String so2;
-    public void setAirSta(String airSta) {
-        this.airSta = airSta;
-    }
-    public String getAirSta() {
-        return airSta;
-    }
-
     public void setAqi(String aqi) {
         this.aqi = aqi;
     }
@@ -38,32 +27,11 @@ public class AirNowStation {
         return aqi;
     }
 
-    public void setAsid(String asid) {
-        this.asid = asid;
-    }
-    public String getAsid() {
-        return asid;
-    }
-
     public void setCo(String co) {
         this.co = co;
     }
     public String getCo() {
         return co;
-    }
-
-    public void setLat(String lat) {
-        this.lat = lat;
-    }
-    public String getLat() {
-        return lat;
-    }
-
-    public void setLon(String lon) {
-        this.lon = lon;
-    }
-    public String getLon() {
-        return lon;
     }
 
     public void setMain(String main) {

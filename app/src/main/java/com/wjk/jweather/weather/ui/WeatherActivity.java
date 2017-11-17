@@ -1,19 +1,20 @@
-package com.wjk.jweather.ui;
+package com.wjk.jweather.weather.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,33 +25,37 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.wjk.jweather.BuildConfig;
 import com.wjk.jweather.R;
-import com.wjk.jweather.adapter.UsualCityAdapter;
-import com.wjk.jweather.airbeen.AirNowCity;
+import com.wjk.jweather.base.BaseActivity;
+import com.wjk.jweather.util.NetUtil;
+import com.wjk.jweather.weather.adapter.UsualCityAdapter;
+import com.wjk.jweather.weather.bean.airbeen.AirNowCity;
 import com.wjk.jweather.db.BaseAreaParseBean;
 import com.wjk.jweather.db.UsualCity;
 import com.wjk.jweather.listener.CityChangeListener;
-import com.wjk.jweather.util.AppConfig;
+import com.wjk.jweather.location.LocateSelectActivity;
+import com.wjk.jweather.util.ConstUrl;
 import com.wjk.jweather.util.JsonUtil;
 import com.wjk.jweather.util.HttpUtil;
-import com.wjk.jweather.weatherbeen.DailyForecast;
-import com.wjk.jweather.weatherbeen.Heweather6;
-import com.wjk.jweather.weatherbeen.Hourly;
-import com.wjk.jweather.weatherbeen.LifestyleMap;
+import com.wjk.jweather.weather.bean.weatherbeen.DailyForecast;
+import com.wjk.jweather.weather.bean.weatherbeen.Heweather6;
+import com.wjk.jweather.weather.bean.weatherbeen.Hourly;
+import com.wjk.jweather.weather.bean.weatherbeen.LifestyleMap;
+import com.wjk.jweather.weather.presenter.WeatherPresenter;
 
 import org.litepal.crud.DataSupport;
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class WeatherActivity extends AppCompatActivity implements View.OnClickListener {
+public class WeatherActivity extends BaseActivity implements WeatherPresenter.OnUiListener{
 
     private NestedScrollView weatherLayout;
     private TextView titleUpdateTime;
@@ -66,58 +71,25 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView imageBg;
     private SwipeRefreshLayout sr_pull_fresh;
     private DrawerLayout drawerLayout;
-    private Toolbar toolbar;
     private UsualCityAdapter mUsualCityAdapter;
     private String mWeatherId;
     private LinearLayout lifeStyleLayout;
     private ViewGroup weatherAiqLayout;
+    private WeatherPresenter presenter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        presenter = new WeatherPresenter(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weather);
-
-        mWeatherId = getIntent().getStringExtra("weather_id");
-
-        initToolBar();
-        initViews();
-        //initCalendarBg();
-        initSelectedCityView();
     }
 
-    /**
-     * 初始化抽屉中已选择城市列表
-     */
-    private void initSelectedCityView() {
-        RecyclerView recyclerView = findViewById(R.id.rv_my_city_list);
-        final List<UsualCity> cities = DataSupport.findAll(UsualCity.class);
-        mUsualCityAdapter = new UsualCityAdapter(cities, new CityChangeListener() {
-            @Override
-            public void onCityChange(BaseAreaParseBean city, int position) {
-                mWeatherId = city.getAreaCode();
-                requestWeather(mWeatherId);
-                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    drawerLayout.closeDrawers();
-                }
-            }
-        });
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(mUsualCityAdapter);
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_weather;
     }
 
-    private void initToolBar() {
-        drawerLayout = findViewById(R.id.drawer_layout);
-        toolbar = findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-        ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
-            supportActionBar.setHomeAsUpIndicator(R.mipmap.ic_menu_white_24dp);
-        }
-    }
-
-    private void initViews() {
+    @Override
+    protected void findViews() {
         sr_pull_fresh = findViewById(R.id.sr_pull_fresh);
         weatherLayout = findViewById(R.id.sv_weather_layout);
         titleUpdateTime = findViewById(R.id.tv_update_time);
@@ -134,48 +106,80 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         imageBg = findViewById(R.id.iv_bg_pic);
         lifeStyleLayout = findViewById(R.id.ll_life_style_layout);
         weatherAiqLayout = findViewById(R.id.fl_weather_aqi_layout);
-        loadDataAndShow();
         sr_pull_fresh.setColorSchemeResources(R.color.colorPrimary);
         sr_pull_fresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestWeather(mWeatherId);
-                requestAqi();
+                presenter.loadData(mWeatherId);
             }
         });
+        drawerLayout = findViewById(R.id.drawer_layout);
     }
 
-    private void loadDataAndShow() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = prefs.getString(mWeatherId, null);
-        if (weatherString != null) {
-            Heweather6 weather = JsonUtil.handleWeatherResponse(weatherString);
-            showWeatherInfo(weather);
-        } else {
-            weatherLayout.setVisibility(View.INVISIBLE);
-            requestWeather(mWeatherId);
-        }
+    @Override
+    protected void initViews() {
+        initSelectedCityView();
+    }
 
-        String aiqStr = prefs.getString("aiq" + mWeatherId, null);
-        if(aiqStr==null){
-            requestAqi();
-        }else{
-            com.wjk.jweather.airbeen.Heweather6 aiq6 = JsonUtil.handleAiqResponse(aiqStr);
-            showAiqInfo(aiq6);
-        }
-
-      /*  String imageBgKey = prefs.getString("imageBgKey", null);
-        String todayImageKey = new Date().getDate() + getIntent().getStringExtra("weather_id");
-        if (imageBgKey != null && imageBgKey.equals(todayImageKey)) {
-            String imageBgUrl = prefs.getString("imageBg", null);
-            if (imageBgUrl != null) {
-                Glide.with(this).load(imageBgUrl).into(imageBg);
-            } else {
-                loadImageBg();
+    /**
+     * 初始化抽屉中已选择城市列表
+     */
+    private void initSelectedCityView() {
+        RecyclerView recyclerView = findViewById(R.id.rv_my_city_list);
+        final List<UsualCity> cities = DataSupport.findAll(UsualCity.class);
+        mUsualCityAdapter = new UsualCityAdapter(cities, new CityChangeListener() {
+            @Override
+            public void onCityChange(BaseAreaParseBean city, int position) {
+                mWeatherId = city.getAreaEN();
+                presenter.loadData(mWeatherId);
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawers();
+                }
             }
-        } else {
-            loadImageBg();
-        }*/
+        });
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(mUsualCityAdapter);
+    }
+
+    @Override
+    protected void initToolbar() {
+        Toolbar toolbar = findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setHomeAsUpIndicator(R.mipmap.ic_menu_white_24dp);
+        }
+    }
+    @Override
+    protected void initData() {
+        Log.e("wjk","init time:"+System.currentTimeMillis());
+        mWeatherId = getIntent().getStringExtra("weather_id");
+        if(NetUtil.isNetAvailable()){
+            presenter.loadData(mWeatherId);
+        }else{
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String weatherString = prefs.getString(mWeatherId, null);
+            if (weatherString != null) {
+                com.wjk.jweather.weather.bean.weatherbeen.Heweather6 weather = JsonUtil.handleWeatherResponse(weatherString);
+                showWeatherInfo(weather);
+            }
+            String aiqStr = prefs.getString("aiq" + mWeatherId, null);
+            if(aiqStr!=null){
+                com.wjk.jweather.weather.bean.airbeen.Heweather6 aiq6 = JsonUtil.handleAiqResponse(aiqStr);
+                showAqi(aiq6);
+            }
+            showNoNet();
+        }
+    }
+
+    /**
+     * 提示用户当前无网络连接
+     */
+    private void showNoNet() {
+        Toast.makeText(WeatherActivity.this,
+                "您的手机无法访问网络", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -206,66 +210,9 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         if (fromChooseArea) {
             mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
             mWeatherId = intent.getStringExtra("weather_id");
-            loadDataAndShow();
+            presenter.loadData(mWeatherId);
         }
         super.onNewIntent(intent);
-    }
-
-    private void requestWeather(final String weatherId) {
-        String url6 = AppConfig.commonWeatherUrl + "?location=" + weatherId + "&key=" + BuildConfig.appKey;
-        /*HashMap<String,String> params = new HashMap<>();
-        params.put("location",weatherId);
-        params.put("key",BuildConfig.appKey);
-        try {
-            String signature = ParamEncode.getSignature(params, BuildConfig.APPLICATION_ID);
-            url5 = "https://free-api.heweather.com/s6/weather?sign="+signature;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        HttpUtil.sendRequest(url6, new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(WeatherActivity.this,
-                                "request weather info failed..", Toast.LENGTH_SHORT).show();
-                        sr_pull_fresh.setRefreshing(false);
-                        setBg("");
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                String responseText = response.body().string();
-                final Heweather6 weather = JsonUtil.handleWeatherResponse(responseText);
-                if (weather != null && "ok".equals(weather.getStatus())) {
-                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
-                            (WeatherActivity.this).edit();
-                    editor.putString(weatherId, responseText);
-                    editor.apply();
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (weather != null && "ok".equals(weather.getStatus())) {
-                            showWeatherInfo(weather);
-                            if (sr_pull_fresh.isRefreshing()) {
-                                Toast.makeText(WeatherActivity.this,
-                                        "更新成功！", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(WeatherActivity.this, weather.getStatus(),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        sr_pull_fresh.setRefreshing(false);
-                    }
-                });
-            }
-        });
-        //loadImageBg();
     }
 
     private void setBg(String state) {
@@ -294,16 +241,25 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         Glide.with(WeatherActivity.this).load(bgId).into(imageBg);
     }
 
-    private void setToolBarTitle(String title) {
-        ActionBar bar = getSupportActionBar();
-        if (bar != null) {
-            bar.setTitle(title);
-        }
-    }
 
     @SuppressLint("SetTextI18n")
-    private void showWeatherInfo(Heweather6 weather) {
-        setToolBarTitle(weather.getBasic().getLocation() + " " + weather.getBasic().getParentCity());
+    @Override
+    public void showWeatherInfo(Heweather6 weather) {
+        Log.e("wjk","show info time:"+System.currentTimeMillis());
+        if (weather != null && "ok".equals(weather.getStatus())) {
+            if (sr_pull_fresh.isRefreshing()) {
+                Toast.makeText(WeatherActivity.this,
+                        "更新成功！", Toast.LENGTH_SHORT).show();
+                sr_pull_fresh.setRefreshing(false);
+            }
+        } else {
+            Toast.makeText(WeatherActivity.this, weather.getStatus(),
+                    Toast.LENGTH_SHORT).show();
+            sr_pull_fresh.setRefreshing(false);
+            return;
+        }
+
+        setTitle(weather.getBasic().getLocation() + " " + weather.getBasic().getParentCity());
         titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
         degreeText.setText(weather.getNow().getTmp() + "℃");
         weatherInfoText.setText(weather.getNow().getCondTxt());
@@ -352,41 +308,28 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             itemView.setText(text);
         }
         weatherLayout.setVisibility(View.VISIBLE);
+
+        if ("ok".equals(weather.getStatus())) {
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
+                    (WeatherActivity.this).edit();
+            editor.putString(mWeatherId, JSON.toJSONString(weather));
+            editor.apply();
+        }
     }
 
-    /**
-     * 加载空气质量信息
-     */
-    private void requestAqi() {
-        String airUrl = AppConfig.airQualityUrl + "?location=" + mWeatherId + "&key=" + BuildConfig.appKey;
-        HttpUtil.sendRequest(airUrl, new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-            }
-
-            @Override
-            public void onResponse(final Response response) throws IOException {
-                final String jsonStr = response.body().string();
-                final com.wjk.jweather.airbeen.Heweather6 aiqObj= JsonUtil.handleAiqResponse(jsonStr);
-                if (aiqObj != null && "ok".equals(aiqObj.getStatus())) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showAiqInfo(aiqObj);
-                        }
-                    });
-
-                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
-                            (WeatherActivity.this).edit();
-                    editor.putString("aiq"+mWeatherId, jsonStr);
-                    editor.apply();
-                }
-            }
-        });
+    @Override
+    public void showGetWeatherFail(String msg) {
+        Toast.makeText(WeatherActivity.this,
+                "request weather info failed..", Toast.LENGTH_SHORT).show();
+        sr_pull_fresh.setRefreshing(false);
+        weatherLayout.setVisibility(View.INVISIBLE);
+        setBg("");
     }
 
-    private void showAiqInfo(com.wjk.jweather.airbeen.Heweather6 aiqObj) {
+    @Override
+    public void showAqi(com.wjk.jweather.weather.bean.airbeen.Heweather6 aiqObj) {
         if (aiqObj == null || aiqObj.getAirNowCity() == null) {
+            weatherAiqLayout.setVisibility(View.GONE);
             return;
         }
         AirNowCity airNow = aiqObj.getAirNowCity();
@@ -395,10 +338,17 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         pm10.setText(airNow.getPm10());
         airQuality.setText(airNow.getQlty());
         weatherAiqLayout.setVisibility(View.VISIBLE);
+
+        if ("ok".equals(aiqObj.getStatus())) {
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
+                    (WeatherActivity.this).edit();
+            editor.putString("aiq" + mWeatherId, JSON.toJSONString(aiqObj));
+            editor.apply();
+        }
     }
 
     @Override
-    public void onClick(View view) {
+    public void showAqiFail(String msg) {
 
     }
 
@@ -409,5 +359,11 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDestroy();
+        super.onDestroy();
     }
 }

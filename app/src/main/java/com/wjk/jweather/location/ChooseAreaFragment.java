@@ -1,4 +1,4 @@
-package com.wjk.jweather.ui;
+package com.wjk.jweather.location;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -18,7 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.wjk.jweather.R;
-import com.wjk.jweather.adapter.CitySelectAdapter;
+import com.wjk.jweather.location.adapter.CitySelectAdapter;
+import com.wjk.jweather.base.BaseFragment;
 import com.wjk.jweather.db.AreaParseBean;
 import com.wjk.jweather.db.BaseAreaParseBean;
 import com.wjk.jweather.db.CityParseBean;
@@ -26,6 +27,7 @@ import com.wjk.jweather.db.ProvinceParseBean;
 import com.wjk.jweather.db.UsualCity;
 import com.wjk.jweather.listener.CityChangeListener;
 import com.wjk.jweather.util.CityTextParseUtil;
+import com.wjk.jweather.weather.ui.WeatherActivity;
 
 import org.litepal.crud.DataSupport;
 
@@ -75,7 +77,7 @@ public class ChooseAreaFragment extends BaseFragment {
                     break;
                 case 2:
                     if(mProgressDialog!=null&&mProgressDialog.isShowing()){
-                        mProgressDialog.setMessage("为您准备城市数据中..."+msg.arg1+"/"+msg.arg2);
+                        mProgressDialog.setMessage("为您准备城市数据:"+msg.arg1+"/"+msg.arg2);
                     }
                     break;
             }
@@ -125,10 +127,19 @@ public class ChooseAreaFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.layout_choose_area,container);
-        mTitleTextView = layout.findViewById(R.id.title_text);
-        mBackBtn = layout.findViewById(R.id.back_btn);
-        mListView = layout.findViewById(R.id.list_view);
+        return super.onCreateView(inflater,container,savedInstanceState);
+    }
+
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.layout_choose_area;
+    }
+
+    @Override
+    protected void initViews() {
+        mTitleTextView = mRootView.findViewById(R.id.title_text);
+        mBackBtn = mRootView.findViewById(R.id.back_btn);
+        mListView = mRootView.findViewById(R.id.list_view);
         mAdapter = new CitySelectAdapter(dataList, new CityChangeListener() {
             @Override
             public void onCityChange(BaseAreaParseBean city, int position) {
@@ -154,12 +165,8 @@ public class ChooseAreaFragment extends BaseFragment {
             }
         });
         mListView.setAdapter(mAdapter);
-        return layout;
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,12 +182,17 @@ public class ChooseAreaFragment extends BaseFragment {
         });
         RecyclerView.LayoutManager manager = new GridLayoutManager(getContext(),3);
         mListView.setLayoutManager(manager);
+    }
+
+    @Override
+    protected void initData() {
         queryProvinces();
     }
 
+
     private void goWeatherActivity(BaseAreaParseBean city) {
         Intent intent = new Intent(getActivity(),WeatherActivity.class);
-        intent.putExtra("weather_id",city.getAreaCode());
+        intent.putExtra("weather_id",city.getAreaEN());
         intent.putExtra("from_choose_area",true);
         startActivity(intent);
         getActivity().finish();
@@ -207,7 +219,6 @@ public class ChooseAreaFragment extends BaseFragment {
         city.save();
     }
     private void queryProvinces() {
-        mTitleTextView.setText("国内");
         mBackBtn.setVisibility(View.GONE);
         provinces = DataSupport.findAll(ProvinceParseBean.class);
         if(provinces.size()>0){
@@ -215,6 +226,7 @@ public class ChooseAreaFragment extends BaseFragment {
             dataList.addAll(provinces);
             mAdapter.setIsProvince(true);
             mCurrentLevel = level_province;
+            mTitleTextView.setText("请选择地区");
         }else{
             showProgressDialog();
             new Thread(new Runnable() {
@@ -296,5 +308,9 @@ public class ChooseAreaFragment extends BaseFragment {
                 return true;
         }
         return false;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentSelect(BaseFragment fragment);
     }
 }
