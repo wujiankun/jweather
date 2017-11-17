@@ -1,7 +1,7 @@
 /**
   * Copyright 2017 aTool.org 
   */
-package com.wjk.jweather.weatherbeen;
+package com.wjk.jweather.weather.bean.weatherbeen;
 
 /**
  * Auto-generated: 2017-11-07 17:34:23

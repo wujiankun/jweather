@@ -1,4 +1,4 @@
-package com.wjk.jweather.weatherbeen;
+package com.wjk.jweather.weather.bean.weatherbeen;
 
 import java.util.HashMap;
 import java.util.Map;

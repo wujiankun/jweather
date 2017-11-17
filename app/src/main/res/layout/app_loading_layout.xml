@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clickable="true">
+
+    <!-- 正在加载 -->
+    <LinearLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/tv_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="请稍等..."
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/common_text_size" />
+    </LinearLayout>
+
+    <!-- 网络错误-->
+    <ViewStub
+        android:id="@+id/net_err_view_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout="@layout/app_loading_net_error" />
+
+
+    <!-- 无数据-->
+    <ViewStub
+        android:id="@+id/no_data_view_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout="@layout/app_loading_no_data" />
+
+</RelativeLayout>
