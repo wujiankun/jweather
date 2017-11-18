@@ -77,7 +77,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ILoading
      * 是否是浅色状态栏（深色文字）
      */
     public boolean isLightStatusBar() {
-        return true;
+        return false;
     }
 
     /**

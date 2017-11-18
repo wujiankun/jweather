@@ -8,7 +8,7 @@
     <TextView
         android:id="@+id/tv_update_time"
         android:layout_width="wrap_content"
-        android:layout_marginRight="@dimen/common_page_right"
+        android:layout_marginRight="@dimen/common_page_horzien_margin"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:textColor="#fff"

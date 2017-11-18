@@ -1,15 +1,23 @@
 package com.wjk.jweather.weather.model;
 
+import android.view.View;
+
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.wjk.jweather.BuildConfig;
+import com.wjk.jweather.db.WeatherDataParseBean;
 import com.wjk.jweather.util.ConstUrl;
 import com.wjk.jweather.util.HttpUtil;
 import com.wjk.jweather.util.JsonUtil;
 import com.wjk.jweather.weather.bean.weatherbeen.Heweather6;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.IOException;
+import java.util.List;
+
+import javax.sql.DataSource;
 
 /**
  * Created by wujiankun on 2017/11/17.
@@ -47,10 +55,34 @@ public class WeatherModle implements Callback {
         String from = response.request().urlString();
         if(from.equals(weatherUrl)){
             Heweather6 weather = JsonUtil.handleWeatherResponse(resultStr);
-            mListener.onGetWeatherInfoSucess(weather);
+            if (weather != null && "ok".equals(weather.getStatus())){
+                mListener.onGetWeatherInfoSucess(weather);
+                saveToDb(weatherUrl,resultStr);
+            }else{
+                mListener.onGetWeatherInfoFail("解析天气数据失败");
+            }
         }else if(from.equals(airUrl)){
             com.wjk.jweather.weather.bean.airbeen.Heweather6 aiqObj= JsonUtil.handleAiqResponse(resultStr);
-            mListener.onGetAqiSucess(aiqObj);
+            if (aiqObj == null || aiqObj.getAirNowCity() == null) {
+                mListener.onGetAqiFail("解析空气质量数据失败");
+            }else{
+                mListener.onGetAqiSucess(aiqObj);
+                saveToDb(weatherUrl,resultStr);
+            }
+        }
+    }
+
+    private void saveToDb(String weatherUrl, String resultStr) {
+        new WeatherDataParseBean(weatherUrl,resultStr).save();
+    }
+
+    public WeatherDataParseBean getDataByWeatherId(String weatherId,String urlInConst){
+        String key = urlInConst+"?location=" + weatherId + "&key=" + BuildConfig.appKey;
+        List<WeatherDataParseBean> parseBeans = DataSupport.where("key = ?", key).find(WeatherDataParseBean.class);
+        if(parseBeans.size()>0){
+            return parseBeans.get(0);
+        }else{
+            return null;
         }
     }
 

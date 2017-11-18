@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.wjk.jweather.base.mvp.IBasePresenter;
+import com.wjk.jweather.db.WeatherDataParseBean;
 import com.wjk.jweather.weather.bean.weatherbeen.Heweather6;
 import com.wjk.jweather.weather.model.WeatherModle;
 
@@ -33,6 +34,10 @@ public class WeatherPresenter implements WeatherModle.Listener,IBasePresenter{
     public void loadData(String weatherId){
         mModle.requestCommonWeather(weatherId);
         mModle.requestAqi(weatherId);
+    }
+
+    public WeatherDataParseBean getDataByWeatherId(String weatherId,String urlInConst){
+        return mModle.getDataByWeatherId(weatherId,urlInConst);
     }
 
     @Override

@@ -6,7 +6,7 @@
     android:text="添加地区"
     android:textSize="16sp"
     android:drawablePadding="5dp"
-    android:paddingRight="@dimen/common_page_right"
+    android:paddingRight="@dimen/common_page_horzien_margin"
     android:drawableLeft="@mipmap/ic_add_white_24dp"
     android:clickable="true"
     android:textColor="#fff" />

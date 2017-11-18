@@ -3,6 +3,7 @@ package com.wjk.jweather.weather.ui;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -14,12 +15,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +36,7 @@ import com.squareup.okhttp.Response;
 import com.wjk.jweather.BuildConfig;
 import com.wjk.jweather.R;
 import com.wjk.jweather.base.BaseActivity;
+import com.wjk.jweather.db.WeatherDataParseBean;
 import com.wjk.jweather.util.NetUtil;
 import com.wjk.jweather.weather.adapter.UsualCityAdapter;
 import com.wjk.jweather.weather.bean.airbeen.AirNowCity;
@@ -50,14 +54,16 @@ import com.wjk.jweather.weather.bean.weatherbeen.LifestyleMap;
 import com.wjk.jweather.weather.presenter.WeatherPresenter;
 
 import org.litepal.crud.DataSupport;
+
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class WeatherActivity extends BaseActivity implements WeatherPresenter.OnUiListener{
+public class WeatherActivity extends BaseActivity implements WeatherPresenter.OnUiListener {
 
-    private NestedScrollView weatherLayout;
+    private LinearLayout weatherLayout;
     private TextView titleUpdateTime;
     private TextView degreeText;
     private TextView weatherInfoText;
@@ -91,7 +97,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @Override
     protected void findViews() {
         sr_pull_fresh = findViewById(R.id.sr_pull_fresh);
-        weatherLayout = findViewById(R.id.sv_weather_layout);
+        weatherLayout = findViewById(R.id.ll_weather_layout);
         titleUpdateTime = findViewById(R.id.tv_update_time);
         degreeText = findViewById(R.id.tv_degree);
         weatherInfoText = findViewById(R.id.tv_weather_info);
@@ -119,6 +125,12 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @Override
     protected void initViews() {
         initSelectedCityView();
+        setRetryClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.loadData(mWeatherId);
+            }
+        });
     }
 
     /**
@@ -152,32 +164,37 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             supportActionBar.setHomeAsUpIndicator(R.mipmap.ic_menu_white_24dp);
         }
     }
+
     @Override
     protected void initData() {
-        Log.e("wjk","init time:"+System.currentTimeMillis());
         mWeatherId = getIntent().getStringExtra("weather_id");
-        if(NetUtil.isNetAvailable()){
+        if (NetUtil.getAPNType(this) > 0) {
+            showLoading();
             presenter.loadData(mWeatherId);
-        }else{
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            String weatherString = prefs.getString(mWeatherId, null);
-            if (weatherString != null) {
-                com.wjk.jweather.weather.bean.weatherbeen.Heweather6 weather = JsonUtil.handleWeatherResponse(weatherString);
+        } else {
+            WeatherDataParseBean bean = presenter.getDataByWeatherId(mWeatherId, ConstUrl.COMMON_WEATHER_URL);
+            if (bean != null) {
+                com.wjk.jweather.weather.bean.weatherbeen.Heweather6 weather
+                        = JsonUtil.handleWeatherResponse(bean.getContentStr());
                 showWeatherInfo(weather);
+                bean = presenter.getDataByWeatherId(mWeatherId, ConstUrl.AIR_QUALITY_URL);
+                if (bean != null) {
+                    com.wjk.jweather.weather.bean.airbeen.Heweather6 aiq6 = JsonUtil.handleAiqResponse(bean.getContentStr());
+                    showAqi(aiq6);
+                }
+                showNoNetTip();
+            }else{
+                //无网无缓存
+                showGetWeatherFail("咋回事儿啊？");
+                showNetError();
             }
-            String aiqStr = prefs.getString("aiq" + mWeatherId, null);
-            if(aiqStr!=null){
-                com.wjk.jweather.weather.bean.airbeen.Heweather6 aiq6 = JsonUtil.handleAiqResponse(aiqStr);
-                showAqi(aiq6);
-            }
-            showNoNet();
         }
     }
 
     /**
      * 提示用户当前无网络连接
      */
-    private void showNoNet() {
+    private void showNoNetTip() {
         Toast.makeText(WeatherActivity.this,
                 "您的手机无法访问网络", Toast.LENGTH_SHORT).show();
     }
@@ -245,20 +262,6 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @SuppressLint("SetTextI18n")
     @Override
     public void showWeatherInfo(Heweather6 weather) {
-        Log.e("wjk","show info time:"+System.currentTimeMillis());
-        if (weather != null && "ok".equals(weather.getStatus())) {
-            if (sr_pull_fresh.isRefreshing()) {
-                Toast.makeText(WeatherActivity.this,
-                        "更新成功！", Toast.LENGTH_SHORT).show();
-                sr_pull_fresh.setRefreshing(false);
-            }
-        } else {
-            Toast.makeText(WeatherActivity.this, weather.getStatus(),
-                    Toast.LENGTH_SHORT).show();
-            sr_pull_fresh.setRefreshing(false);
-            return;
-        }
-
         setTitle(weather.getBasic().getLocation() + " " + weather.getBasic().getParentCity());
         titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
         degreeText.setText(weather.getNow().getTmp() + "℃");
@@ -275,7 +278,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             TextView temp = inflate.findViewById(R.id.tv_temp);
             TextView wind = inflate.findViewById(R.id.tv_wind);
             Date theDate = forecast.getDate();
-            date.setText(theDate.getMonth()+"-"+theDate.getDate()+" 周"+theDate.getDay());
+            date.setText(theDate.getMonth() + "-" + theDate.getDate() + " 周" + theDate.getDay());
             info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
             temp.setText(forecast.getTmpMin() + "℃" + "-" + forecast.getTmpMax() + "℃");
             wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
@@ -284,7 +287,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         hourlyLayout.removeAllViews();
         hourlyLayout.setVisibility(View.GONE);
         List<Hourly> hourly = weather.getHourly();
-        if(hourly!=null){
+        if (hourly != null) {
             for (Hourly forecast : weather.getHourly()) {
                 View inflate = LayoutInflater.from(this).inflate(R.layout.layout_weather_forecast_item,
                         forecastLayout, false);
@@ -309,47 +312,47 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         }
         weatherLayout.setVisibility(View.VISIBLE);
 
-        if ("ok".equals(weather.getStatus())) {
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
-                    (WeatherActivity.this).edit();
-            editor.putString(mWeatherId, JSON.toJSONString(weather));
-            editor.apply();
+        if (sr_pull_fresh.isRefreshing()) {
+            sr_pull_fresh.setRefreshing(false);
+            Toast.makeText(WeatherActivity.this,
+                    "更新成功！", Toast.LENGTH_SHORT).show();
+
         }
+        hideLoading();
     }
 
     @Override
     public void showGetWeatherFail(String msg) {
-        Toast.makeText(WeatherActivity.this,
-                "request weather info failed..", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(WeatherActivity.this,msg, Toast.LENGTH_SHORT).show();
         sr_pull_fresh.setRefreshing(false);
-        weatherLayout.setVisibility(View.INVISIBLE);
-        setBg("");
+        weatherLayout.setVisibility(View.GONE);
+        showNetError();
+        showNoNetTip();
     }
 
     @Override
     public void showAqi(com.wjk.jweather.weather.bean.airbeen.Heweather6 aiqObj) {
-        if (aiqObj == null || aiqObj.getAirNowCity() == null) {
-            weatherAiqLayout.setVisibility(View.GONE);
-            return;
-        }
         AirNowCity airNow = aiqObj.getAirNowCity();
         aqiText.setText(airNow.getAqi());
         pm25Text.setText(airNow.getPm25());
         pm10.setText(airNow.getPm10());
         airQuality.setText(airNow.getQlty());
         weatherAiqLayout.setVisibility(View.VISIBLE);
-
-        if ("ok".equals(aiqObj.getStatus())) {
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
-                    (WeatherActivity.this).edit();
-            editor.putString("aiq" + mWeatherId, JSON.toJSONString(aiqObj));
-            editor.apply();
-        }
     }
 
     @Override
     public void showAqiFail(String msg) {
+        weatherAiqLayout.setVisibility(View.GONE);
+    }
 
+    @Override
+    protected boolean isTransStatusBar() {
+        return true;
+    }
+
+    @Override
+    public boolean isLightStatusBar() {
+        return false;
     }
 
     @Override

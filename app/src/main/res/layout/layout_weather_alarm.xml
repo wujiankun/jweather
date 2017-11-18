@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/common_page_right"
+    android:layout_margin="@dimen/common_page_horzien_margin"
     android:background="@color/colorBgPrimary"
     android:orientation="vertical">
 <!--生活建议信息-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_page_right"
-        android:layout_marginLeft="@dimen/common_page_right"
+        android:layout_marginTop="@dimen/common_page_horzien_margin"
+        android:layout_marginLeft="@dimen/common_page_horzien_margin"
         android:textColor="#fff"
         android:text="生活建议"
         android:textSize="@dimen/common_text_size" />
@@ -20,21 +20,21 @@
         android:layout_height="wrap_content"
         android:textColor="#fff"
         android:text="生活建议"
-        android:layout_margin="@dimen/common_page_right"
+        android:layout_margin="@dimen/common_page_horzien_margin"
          />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
         android:text="生活建议"
-        android:layout_margin="@dimen/common_page_right"
+        android:layout_margin="@dimen/common_page_horzien_margin"
          />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
         android:text="生活建议"
-        android:layout_margin="@dimen/common_page_right"
+        android:layout_margin="@dimen/common_page_horzien_margin"
          />
 
 </LinearLayout>

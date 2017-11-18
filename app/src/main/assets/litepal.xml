@@ -6,5 +6,6 @@
         <mapping class='com.wjk.jweather.db.AreaParseBean'/>
         <mapping class='com.wjk.jweather.db.ProvinceParseBean'/>
         <mapping class='com.wjk.jweather.db.CityParseBean'/>
+        <mapping class="com.wjk.jweather.db.WeatherDataParseBean"/>
     </list>
 </litepal>

@@ -5,12 +5,14 @@ package com.wjk.jweather.weather.bean.airbeen;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import org.litepal.crud.DataSupport;
+
 import java.util.List;
 
 /**
  * Auto-generated: 2017-11-08 15:3:56
  */
-public class Heweather6 {
+public class Heweather6{
 
 
     private Basic basic;

@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="@dimen/common_page_right"
+    android:layout_marginTop="@dimen/common_page_horzien_margin"
+    android:layout_marginLeft="@dimen/common_page_horzien_margin"
+    android:layout_marginRight="@dimen/common_page_horzien_margin"
     app:cardBackgroundColor="@color/colorBgPrimary"
-    app:cardElevation="0dp"
-    >
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="0dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,17 +18,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/common_page_right"
-            android:layout_marginTop="@dimen/common_page_right"
-            android:textColor="#fff"
+            android:layout_marginLeft="@dimen/common_page_horzien_margin"
+            android:layout_marginTop="@dimen/common_page_horzien_margin"
             android:text="未来三天"
+            android:textColor="#fff"
             android:textSize="@dimen/common_text_size" />
 
         <LinearLayout
             android:id="@+id/ll_forecast_layout"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
         </LinearLayout>
 
