@@ -23,12 +23,21 @@
             android:textColor="#fff"
             android:textSize="@dimen/big_text_size" />
 
+        <ImageView
+            android:id="@+id/iv_weather_ico"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="@dimen/common_page_horzien_margin"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/tv_degree"
+             />
+
         <TextView
             android:id="@+id/tv_weather_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/iv_weather_ico"
             android:layout_alignBaseline="@id/tv_degree"
-            android:layout_toRightOf="@id/tv_degree"
             android:textColor="#fff"
             android:textSize="@dimen/common_text_size" />
 
@@ -42,6 +51,7 @@
             android:textSize="@dimen/common_text_size" />
 
         <TextView
+            android:textSize="10sp"
             android:id="@+id/tv_update_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

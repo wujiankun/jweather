@@ -1,13 +1,11 @@
 package com.wjk.jweather.weather.model;
 
-import android.view.View;
-
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.wjk.jweather.BuildConfig;
 import com.wjk.jweather.db.WeatherDataParseBean;
-import com.wjk.jweather.util.ConstUrl;
+import com.wjk.jweather.util.MyConst;
 import com.wjk.jweather.util.HttpUtil;
 import com.wjk.jweather.util.JsonUtil;
 import com.wjk.jweather.weather.bean.weatherbeen.Heweather6;
@@ -16,8 +14,6 @@ import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 /**
  * Created by wujiankun on 2017/11/17.
@@ -87,7 +83,7 @@ public class WeatherModle implements Callback {
     }
 
     public void requestCommonWeather(String weatherId){
-        weatherUrl = ConstUrl.COMMON_WEATHER_URL + "?location=" + weatherId + "&key=" + BuildConfig.appKey;
+        weatherUrl = MyConst.COMMON_WEATHER_URL + "?location=" + weatherId + "&key=" + BuildConfig.appKey;
         /*HashMap<String,String> params = new HashMap<>();
         params.put("location",weatherId);
         params.put("key",BuildConfig.appKey);
@@ -101,7 +97,7 @@ public class WeatherModle implements Callback {
     }
 
     public void requestAqi(String weatherId){
-        airUrl = ConstUrl.AIR_QUALITY_URL + "?location=" + weatherId + "&key=" + BuildConfig.appKey;
+        airUrl = MyConst.AIR_QUALITY_URL + "?location=" + weatherId + "&key=" + BuildConfig.appKey;
         HttpUtil.sendRequest(airUrl,this);
     }
 

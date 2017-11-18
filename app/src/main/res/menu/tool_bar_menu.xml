@@ -10,6 +10,15 @@
         android:textSize="16sp"
         tools:ignore="HardcodedText"
         android:orderInCategory="1"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/menu_about"
+        android:title="关于我"
+        android:textSize="16sp"
+        tools:ignore="HardcodedText"
+        android:orderInCategory="1"
+        app:showAsAction="never"
         />
 </menu>

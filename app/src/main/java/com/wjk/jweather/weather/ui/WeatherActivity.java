@@ -1,52 +1,42 @@
 package com.wjk.jweather.weather.ui;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.wjk.jweather.BuildConfig;
 import com.wjk.jweather.R;
+import com.wjk.jweather.about.AboutMeActivity;
 import com.wjk.jweather.base.BaseActivity;
 import com.wjk.jweather.db.WeatherDataParseBean;
 import com.wjk.jweather.util.NetUtil;
+import com.wjk.jweather.weather.adapter.MutiItemsAdapter;
 import com.wjk.jweather.weather.adapter.UsualCityAdapter;
 import com.wjk.jweather.weather.bean.airbeen.AirNowCity;
 import com.wjk.jweather.db.BaseAreaParseBean;
 import com.wjk.jweather.db.UsualCity;
 import com.wjk.jweather.listener.CityChangeListener;
 import com.wjk.jweather.location.LocateSelectActivity;
-import com.wjk.jweather.util.ConstUrl;
+import com.wjk.jweather.util.MyConst;
 import com.wjk.jweather.util.JsonUtil;
-import com.wjk.jweather.util.HttpUtil;
 import com.wjk.jweather.weather.bean.weatherbeen.DailyForecast;
 import com.wjk.jweather.weather.bean.weatherbeen.Heweather6;
 import com.wjk.jweather.weather.bean.weatherbeen.Hourly;
@@ -55,8 +45,6 @@ import com.wjk.jweather.weather.presenter.WeatherPresenter;
 
 import org.litepal.crud.DataSupport;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +56,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private TextView degreeText;
     private TextView weatherInfoText;
     private LinearLayout forecastLayout;
-    private LinearLayout hourlyLayout;
+    private RecyclerView hourlyLayout;
     private TextView aqiText;
     private TextView pm25Text;
     private TextView pm10;
@@ -82,6 +70,8 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private LinearLayout lifeStyleLayout;
     private ViewGroup weatherAiqLayout;
     private WeatherPresenter presenter;
+    private ImageView iv_weather_ico;
+    private View cv_hourly_wrapper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,9 +90,11 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         weatherLayout = findViewById(R.id.ll_weather_layout);
         titleUpdateTime = findViewById(R.id.tv_update_time);
         degreeText = findViewById(R.id.tv_degree);
+        iv_weather_ico = findViewById(R.id.iv_weather_ico);
         weatherInfoText = findViewById(R.id.tv_weather_info);
         forecastLayout = findViewById(R.id.ll_forecast_layout);
-        hourlyLayout = findViewById(R.id.ll_hourly_layout);
+        hourlyLayout = findViewById(R.id.rv_hourly_layout);
+        cv_hourly_wrapper = findViewById(R.id.cv_hourly_wrapper);
         aqiText = findViewById(R.id.tv_aqi);
         pm25Text = findViewById(R.id.tv_pm25);
         pm10 = findViewById(R.id.tv_pm10);
@@ -147,11 +139,31 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawers();
                 }
+                //切换默认城市
+                switchDefaultCity(city);
             }
         });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mUsualCityAdapter);
+    }
+
+    private void switchDefaultCity(BaseAreaParseBean county) {
+        ContentValues values = new ContentValues();
+        values.put("isLoveCity",0);
+        //查询出默认城市的id然后修改为非默认
+        List<UsualCity> usualCities = DataSupport.where("isLoveCity=?", "1")
+                .find(UsualCity.class);
+        if(usualCities.size()>0){
+            DataSupport.update(UsualCity.class,values,usualCities.get(0).getId());
+        }
+        List<UsualCity> temp2 = DataSupport.where("areaCode=?", county.getAreaCode())
+                .find(UsualCity.class);
+        if(temp2.size()>0){
+            values.put("isLoveCity",1);
+            DataSupport.update(UsualCity.class,values,temp2.get(0).getId());
+        }
+        mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
     }
 
     @Override
@@ -172,12 +184,12 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             showLoading();
             presenter.loadData(mWeatherId);
         } else {
-            WeatherDataParseBean bean = presenter.getDataByWeatherId(mWeatherId, ConstUrl.COMMON_WEATHER_URL);
+            WeatherDataParseBean bean = presenter.getDataByWeatherId(mWeatherId, MyConst.COMMON_WEATHER_URL);
             if (bean != null) {
                 com.wjk.jweather.weather.bean.weatherbeen.Heweather6 weather
                         = JsonUtil.handleWeatherResponse(bean.getContentStr());
                 showWeatherInfo(weather);
-                bean = presenter.getDataByWeatherId(mWeatherId, ConstUrl.AIR_QUALITY_URL);
+                bean = presenter.getDataByWeatherId(mWeatherId, MyConst.AIR_QUALITY_URL);
                 if (bean != null) {
                     com.wjk.jweather.weather.bean.airbeen.Heweather6 aiq6 = JsonUtil.handleAiqResponse(bean.getContentStr());
                     showAqi(aiq6);
@@ -208,6 +220,10 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             case R.id.menu_add_city:
                 Intent intent = new Intent(this, LocateSelectActivity.class);
                 intent.putExtra("add_city", 1);
+                startActivity(intent);
+                return true;
+            case R.id.menu_about:
+                intent = new Intent(this, AboutMeActivity.class);
                 startActivity(intent);
                 return true;
             default:
@@ -268,40 +284,21 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         weatherInfoText.setText(weather.getNow().getCondTxt());
         setBg(weather.getNow().getCondTxt());
         nowWind.setText(weather.getNow().getWindDir() + "-" + weather.getNow().getWindSc());
-        forecastLayout.removeAllViews();
-        for (DailyForecast forecast : weather.getDailyForecast()) {
-            View inflate = LayoutInflater.from(this)
-                    .inflate(R.layout.layout_weather_forecast_item,
-                            forecastLayout, false);
-            TextView date = inflate.findViewById(R.id.tv_date);
-            TextView info = inflate.findViewById(R.id.tv_info);
-            TextView temp = inflate.findViewById(R.id.tv_temp);
-            TextView wind = inflate.findViewById(R.id.tv_wind);
-            Date theDate = forecast.getDate();
-            date.setText(theDate.getMonth() + "-" + theDate.getDate() + " 周" + theDate.getDay());
-            info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
-            temp.setText(forecast.getTmpMin() + "℃" + "-" + forecast.getTmpMax() + "℃");
-            wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
-            forecastLayout.addView(inflate);
-        }
-        hourlyLayout.removeAllViews();
-        hourlyLayout.setVisibility(View.GONE);
+        String condCode = weather.getNow().getCondCode();
+        Glide.with(this).load("file:///android_asset/"+condCode+".png").into(iv_weather_ico);
+
+
         List<Hourly> hourly = weather.getHourly();
-        if (hourly != null) {
-            for (Hourly forecast : weather.getHourly()) {
-                View inflate = LayoutInflater.from(this).inflate(R.layout.layout_weather_forecast_item,
-                        forecastLayout, false);
-                TextView date = inflate.findViewById(R.id.tv_date);
-                TextView info = inflate.findViewById(R.id.tv_info);
-                TextView temp = inflate.findViewById(R.id.tv_temp);
-                TextView wind = inflate.findViewById(R.id.tv_wind);
-                date.setText(forecast.getTime().split(" ")[1]);
-                info.setText(forecast.getCondTxt());
-                temp.setText(forecast.getTmp() + "℃");
-                wind.setText(forecast.getWindDir() + "-" + forecast.getWindSc());
-                hourlyLayout.addView(inflate);
-            }
-            hourlyLayout.setVisibility(View.VISIBLE);
+        if (hourly != null&&hourly.size()>0) {
+            MutiItemsAdapter adapter = new MutiItemsAdapter(this);
+            RecyclerView.LayoutManager layoutManager =
+                    new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false);
+            hourlyLayout.setLayoutManager(layoutManager);
+            hourlyLayout.setAdapter(adapter);
+            adapter.setDataList(hourly);
+            cv_hourly_wrapper.setVisibility(View.VISIBLE);
+        }else{
+            cv_hourly_wrapper.setVisibility(View.GONE);
         }
         for (int i = 0; i < weather.getLifestyle().size(); i++) {
             String type = weather.getLifestyle().get(i).getType();
@@ -311,6 +308,30 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             itemView.setText(text);
         }
         weatherLayout.setVisibility(View.VISIBLE);
+
+
+        forecastLayout.removeAllViews();
+        for (DailyForecast forecast : weather.getDailyForecast()) {
+            View inflate = LayoutInflater.from(this)
+                    .inflate(R.layout.layout_weather_forecast_item,
+                            forecastLayout, false);
+            TextView date = inflate.findViewById(R.id.tv_date);
+            ImageView iv_weather_ico1 = inflate.findViewById(R.id.iv_weather_ico1);
+            ImageView iv_weather_ico2 = inflate.findViewById(R.id.iv_weather_ico2);
+            TextView temp = inflate.findViewById(R.id.tv_temp);
+            TextView wind = inflate.findViewById(R.id.tv_wind);
+            Date theDate = forecast.getDate();
+            date.setText(theDate.getMonth() + "-" + theDate.getDate() + " " + MyConst.weekTxt[theDate.getDay()]);
+            //info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
+            temp.setText(forecast.getTmpMin() + "℃" + "~" + forecast.getTmpMax() + "℃");
+            String windDir = forecast.getWindDir();
+            windDir = windDir.replace("无持续风向","")+" ";
+            wind.setText(windDir+forecast.getWindSc());
+            Glide.with(this).load("file:///android_asset/"+forecast.getCondCodeD()+".png").into(iv_weather_ico1);
+            Glide.with(this).load("file:///android_asset/"+forecast.getCondCodeN()+".png").into(iv_weather_ico2);
+            forecastLayout.addView(inflate);
+        }
+
 
         if (sr_pull_fresh.isRefreshing()) {
             sr_pull_fresh.setRefreshing(false);
