@@ -53,7 +53,7 @@ public class MutiItemsAdapter extends RecyclerView.Adapter {
         myHolder.tv_temp.setText(hourly.getTmp() + "℃");
         myHolder.tv_wind.setText(hourly.getWindDir() + "-" + hourly.getWindSc());
         String condCode = hourly.getCondCode();
-        Glide.with(mContext).load("file:///android_asset/"+condCode+".png").into(myHolder.iv_weather_ico);
+        Glide.with(mContext).load("file:///android_asset/ico/"+condCode+".png").into(myHolder.iv_weather_ico);
     }
 
     @Override

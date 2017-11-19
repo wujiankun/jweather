@@ -285,7 +285,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         setBg(weather.getNow().getCondTxt());
         nowWind.setText(weather.getNow().getWindDir() + "-" + weather.getNow().getWindSc());
         String condCode = weather.getNow().getCondCode();
-        Glide.with(this).load("file:///android_asset/"+condCode+".png").into(iv_weather_ico);
+        Glide.with(this).load("file:///android_asset/ico/"+condCode+".png").into(iv_weather_ico);
 
 
         List<Hourly> hourly = weather.getHourly();
@@ -321,14 +321,14 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             TextView temp = inflate.findViewById(R.id.tv_temp);
             TextView wind = inflate.findViewById(R.id.tv_wind);
             Date theDate = forecast.getDate();
-            date.setText(theDate.getMonth() + "-" + theDate.getDate() + " " + MyConst.weekTxt[theDate.getDay()]);
+            date.setText((theDate.getMonth()+1) + "-" + theDate.getDate() + " " + MyConst.weekTxt[theDate.getDay()]);
             //info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
             temp.setText(forecast.getTmpMin() + "℃" + "~" + forecast.getTmpMax() + "℃");
             String windDir = forecast.getWindDir();
             windDir = windDir.replace("无持续风向","")+" ";
             wind.setText(windDir+forecast.getWindSc());
-            Glide.with(this).load("file:///android_asset/"+forecast.getCondCodeD()+".png").into(iv_weather_ico1);
-            Glide.with(this).load("file:///android_asset/"+forecast.getCondCodeN()+".png").into(iv_weather_ico2);
+            Glide.with(this).load("file:///android_asset/ico/"+forecast.getCondCodeD()+".png").into(iv_weather_ico1);
+            Glide.with(this).load("file:///android_asset/ico/"+forecast.getCondCodeN()+".png").into(iv_weather_ico2);
             forecastLayout.addView(inflate);
         }
 

@@ -25,8 +25,8 @@
 
         <ImageView
             android:id="@+id/iv_weather_ico"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
             android:layout_marginRight="@dimen/common_page_horzien_margin"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/tv_degree"
