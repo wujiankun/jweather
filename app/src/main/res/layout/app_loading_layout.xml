@@ -6,7 +6,7 @@
     android:clickable="true">
 
     <!-- 正在加载 -->
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/loading_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,15 +14,30 @@
         android:orientation="vertical"
         android:visibility="visible">
 
+        <ImageView
+            android:layout_marginTop="?attr/actionBarSize"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/bg_watting1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View
+            android:background="@color/colorBgWaitting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
         <TextView
+            android:layout_marginBottom="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
             android:id="@+id/tv_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="请稍等..."
-            android:textColor="@color/colorPrimary"
+            android:text="请稍等一下..."
+            android:textColor="@android:color/white"
             android:textSize="@dimen/common_text_size" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <!-- 网络错误-->
     <ViewStub

@@ -4,4 +4,5 @@
     <color name="colorBgPrimary">#60000000</color>
     <color name="colorPrimaryDark">#222</color>
     <color name="colorAccent">#2E6480</color>
+    <color name="colorBgWaitting">#30613a09</color>
 </resources>

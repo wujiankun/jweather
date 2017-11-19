@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -166,7 +167,6 @@ public class ChooseAreaFragment extends BaseFragment {
         });
         mListView.setAdapter(mAdapter);
 
-
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,6 +182,7 @@ public class ChooseAreaFragment extends BaseFragment {
         });
         RecyclerView.LayoutManager manager = new GridLayoutManager(getContext(),3);
         mListView.setLayoutManager(manager);
+        mListView.setItemAnimator(new DefaultItemAnimator());
     }
 
     @Override

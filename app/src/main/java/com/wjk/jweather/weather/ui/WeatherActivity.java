@@ -76,6 +76,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         presenter = new WeatherPresenter(this);
+        mWeatherId = getIntent().getStringExtra("weather_id");
         super.onCreate(savedInstanceState);
     }
 
@@ -135,7 +136,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             @Override
             public void onCityChange(BaseAreaParseBean city, int position) {
                 mWeatherId = city.getAreaEN();
-                presenter.loadData(mWeatherId);
+                initData();
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawers();
                 }
@@ -179,7 +180,6 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
     @Override
     protected void initData() {
-        mWeatherId = getIntent().getStringExtra("weather_id");
         if (NetUtil.getAPNType(this) > 0) {
             showLoading();
             presenter.loadData(mWeatherId);
@@ -344,11 +344,13 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
     @Override
     public void showGetWeatherFail(String msg) {
-        //Toast.makeText(WeatherActivity.this,msg, Toast.LENGTH_SHORT).show();
         sr_pull_fresh.setRefreshing(false);
         weatherLayout.setVisibility(View.GONE);
-        showNetError();
-        showNoNetTip();
+        if(msg.contains("解析")){
+            showNoData();
+        }else{
+            showNetError();
+        }
     }
 
     @Override
@@ -364,6 +366,8 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @Override
     public void showAqiFail(String msg) {
         weatherAiqLayout.setVisibility(View.GONE);
+        if(msg.contains("解析")){
+        }
     }
 
     @Override

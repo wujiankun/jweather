@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:background="@color/colorPrimary"
     android:orientation="vertical">
 
 
@@ -18,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="您的网络出问题啦\n连网之后下拉刷新"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@android:color/white"
         android:textSize="@dimen/common_text_size" />
 
 </LinearLayout>

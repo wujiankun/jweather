@@ -3,6 +3,7 @@ package com.wjk.jweather.view;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewStub;
@@ -28,7 +29,7 @@ public class LoadingView extends RelativeLayout {
     private ViewStub netErrStub;
 
     // loading
-    private LinearLayout loadingLayout;
+    private RelativeLayout loadingLayout;
     private TextView loadingTv;
 
     // ###########暂无数据#############
@@ -72,7 +73,7 @@ public class LoadingView extends RelativeLayout {
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.app_loading_layout, this);
         // loading
-        loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
+        loadingLayout = findViewById(R.id.loading_layout);
         loadingTv = (TextView) findViewById(R.id.tv_loading);
         // 网络错误
         netErrStub = (ViewStub) findViewById(R.id.net_err_view_stub);
