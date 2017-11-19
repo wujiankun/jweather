@@ -257,15 +257,15 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             } else {
                 bgId = R.mipmap.sunny;
             }
-        } else if (state.equals("多云")) {
+        } else if (state.contains("多云")) {
             bgId = R.mipmap.cloudy;
-        } else if (state.equals("雾")) {
+        } else if (state.contains("雾")) {
             bgId = R.mipmap.frog;
-        } else if (state.equals("雨")) {
+        } else if (state.contains("雨")) {
             bgId = R.mipmap.rainy;
-        } else if (state.equals("雪")) {
+        } else if (state.contains("雪")) {
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-            if (hour > 18) {
+            if (hour > 17) {
                 bgId = R.mipmap.snow_night;
             } else {
                 bgId = R.mipmap.snow;
