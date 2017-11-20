@@ -321,7 +321,8 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             TextView temp = inflate.findViewById(R.id.tv_temp);
             TextView wind = inflate.findViewById(R.id.tv_wind);
             Date theDate = forecast.getDate();
-            date.setText((theDate.getMonth()+1) + "-" + theDate.getDate() + " " + MyConst.weekTxt[theDate.getDay()]);
+            String dateText = generateDateText(theDate);
+            date.setText(dateText);
             //info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
             temp.setText(forecast.getTmpMin() + "℃" + "~" + forecast.getTmpMax() + "℃");
             String windDir = forecast.getWindDir();
@@ -340,6 +341,23 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
         }
         hideLoading();
+    }
+
+    private String generateDateText(Date theDate) {
+        String dateTxt = (theDate.getMonth()+1) + "-" + theDate.getDate()+" ";
+        int month = theDate.getMonth();
+        int date = theDate.getDate();
+        int day = theDate.getDay();
+        Date now = new Date();
+        int nowMonth = now.getMonth();
+        int nowDate = now.getDate();
+
+        if(month==nowMonth&&date==nowDate){
+            dateTxt = "今天   ";
+        }else if(month==nowMonth&&date==nowDate+1){
+            dateTxt = "明天   ";
+        }
+        return dateTxt+MyConst.weekTxt[day];
     }
 
     @Override
