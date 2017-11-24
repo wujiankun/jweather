@@ -63,7 +63,7 @@ public class WeatherModle implements Callback {
                 mListener.onGetAqiFail("解析空气质量数据失败");
             }else{
                 mListener.onGetAqiSucess(aiqObj);
-                saveToDb(weatherUrl,resultStr);
+                saveToDb(airUrl,resultStr);
             }
         }
     }

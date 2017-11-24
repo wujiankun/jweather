@@ -2,6 +2,7 @@ package com.wjk.jweather.weather.ui;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -67,6 +69,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private DrawerLayout drawerLayout;
     private UsualCityAdapter mUsualCityAdapter;
     private String mWeatherId;
+    private String mParentWeatherId;
     private LinearLayout lifeStyleLayout;
     private ViewGroup weatherAiqLayout;
     private WeatherPresenter presenter;
@@ -77,6 +80,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         presenter = new WeatherPresenter(this);
         mWeatherId = getIntent().getStringExtra("weather_id");
+        mParentWeatherId = getIntent().getStringExtra("parent_id");
         super.onCreate(savedInstanceState);
     }
 
@@ -109,7 +113,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         sr_pull_fresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                presenter.loadData(mWeatherId);
+                presenter.loadData(mWeatherId,mParentWeatherId);
             }
         });
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -121,7 +125,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         setRetryClick(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.loadData(mWeatherId);
+                presenter.loadData(mWeatherId,mParentWeatherId);
             }
         });
     }
@@ -135,13 +139,18 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         mUsualCityAdapter = new UsualCityAdapter(cities, new CityChangeListener() {
             @Override
             public void onCityChange(BaseAreaParseBean city, int position) {
-                mWeatherId = city.getAreaEN();
+                mWeatherId = city.getAreaCode();mParentWeatherId = city.getParentAreaCN();
                 initData();
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawers();
                 }
                 //切换默认城市
                 switchDefaultCity(city);
+            }
+
+            @Override
+            public void onCityDelete(BaseAreaParseBean city, int position) {
+                deleteCity(city);
             }
         });
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -167,6 +176,31 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
     }
 
+    private void deleteCity(BaseAreaParseBean county) {
+        List<UsualCity> temp2 = DataSupport.where("areaCode=?", county.getAreaCode())
+                .find(UsualCity.class);
+        if(temp2.size()>0){
+            final UsualCity usualCity = temp2.get(0);
+            new AlertDialog.Builder(this)
+                    .setTitle("删除地区")
+                    .setMessage("您确定要删除"+usualCity.getAreaCN()+"吗？")
+                    .setPositiveButton("删了", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DataSupport.delete(UsualCity.class, usualCity.getId());
+                            mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton("算了", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
+    }
+
     @Override
     protected void initToolbar() {
         Toolbar toolbar = findViewById(R.id.tool_bar);
@@ -182,14 +216,14 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     protected void initData() {
         if (NetUtil.getAPNType(this) > 0) {
             showLoading();
-            presenter.loadData(mWeatherId);
+            presenter.loadData(mWeatherId,mParentWeatherId);
         } else {
             WeatherDataParseBean bean = presenter.getDataByWeatherId(mWeatherId, MyConst.COMMON_WEATHER_URL);
             if (bean != null) {
                 com.wjk.jweather.weather.bean.weatherbeen.Heweather6 weather
                         = JsonUtil.handleWeatherResponse(bean.getContentStr());
                 showWeatherInfo(weather);
-                bean = presenter.getDataByWeatherId(mWeatherId, MyConst.AIR_QUALITY_URL);
+                bean = presenter.getDataByWeatherId(mParentWeatherId, MyConst.AIR_QUALITY_URL);
                 if (bean != null) {
                     com.wjk.jweather.weather.bean.airbeen.Heweather6 aiq6 = JsonUtil.handleAiqResponse(bean.getContentStr());
                     showAqi(aiq6);
@@ -243,7 +277,8 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         if (fromChooseArea) {
             mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
             mWeatherId = intent.getStringExtra("weather_id");
-            presenter.loadData(mWeatherId);
+            mParentWeatherId = getIntent().getStringExtra("parent_id");
+            presenter.loadData(mWeatherId,mParentWeatherId);
         }
         super.onNewIntent(intent);
     }

@@ -9,4 +9,5 @@ import com.wjk.jweather.db.BaseAreaParseBean;
 
 public interface CityChangeListener {
     void onCityChange(BaseAreaParseBean city, int position);
+    void onCityDelete(BaseAreaParseBean city, int position);
 }

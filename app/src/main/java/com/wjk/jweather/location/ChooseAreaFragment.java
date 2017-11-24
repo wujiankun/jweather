@@ -164,6 +164,11 @@ public class ChooseAreaFragment extends BaseFragment {
                         break;
                 }
             }
+
+            @Override
+            public void onCityDelete(BaseAreaParseBean city, int position) {
+
+            }
         });
         mListView.setAdapter(mAdapter);
 
@@ -193,7 +198,8 @@ public class ChooseAreaFragment extends BaseFragment {
 
     private void goWeatherActivity(BaseAreaParseBean city) {
         Intent intent = new Intent(getActivity(),WeatherActivity.class);
-        intent.putExtra("weather_id",city.getAreaEN());
+        intent.putExtra("weather_id",city.getAreaCode());
+        intent.putExtra("parent_id",city.getParentAreaCN());
         intent.putExtra("from_choose_area",true);
         startActivity(intent);
         getActivity().finish();

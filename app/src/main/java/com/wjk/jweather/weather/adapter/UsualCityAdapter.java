@@ -30,11 +30,20 @@ public class UsualCityAdapter extends RecyclerView.Adapter {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_area, parent, false);
         final MyHolder holder = new MyHolder(v);
+
         holder.cityNameView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int position = holder.getAdapterPosition();
+                final int position = holder.getAdapterPosition();
                 listener.onCityChange(cities.get(position), position);
+            }
+        });
+        holder.cityNameView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                final int position = holder.getAdapterPosition();
+                listener.onCityDelete(cities.get(position), position);
+                return true;
             }
         });
         return holder;

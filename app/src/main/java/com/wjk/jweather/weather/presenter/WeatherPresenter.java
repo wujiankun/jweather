@@ -31,9 +31,9 @@ public class WeatherPresenter implements WeatherModle.Listener,IBasePresenter{
         handler = new InnerHandler();
     }
 
-    public void loadData(String weatherId){
+    public void loadData(String weatherId,String parentId){
         mModle.requestCommonWeather(weatherId);
-        mModle.requestAqi(weatherId);
+        mModle.requestAqi(parentId);
     }
 
     public WeatherDataParseBean getDataByWeatherId(String weatherId,String urlInConst){
