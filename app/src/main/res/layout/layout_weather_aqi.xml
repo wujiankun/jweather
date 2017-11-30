@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="AQI指数"
+                android:text="AQI"
                 android:textColor="#fff" />
 
             <TextView
@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="PM2.5指数"
+                android:text="PM2.5"
                 android:textColor="#fff" />
 
             <TextView
@@ -107,7 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="PM10指数"
+                android:text="PM10"
                 android:textColor="#fff" />
 
             <TextView

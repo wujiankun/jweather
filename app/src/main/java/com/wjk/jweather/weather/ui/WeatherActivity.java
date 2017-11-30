@@ -75,6 +75,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private WeatherPresenter presenter;
     private ImageView iv_weather_ico;
     private View cv_hourly_wrapper;
+    private TextView tv_forecast_title;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,6 +99,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         iv_weather_ico = findViewById(R.id.iv_weather_ico);
         weatherInfoText = findViewById(R.id.tv_weather_info);
         forecastLayout = findViewById(R.id.ll_forecast_layout);
+        tv_forecast_title = findViewById(R.id.tv_forecast_title);
         hourlyLayout = findViewById(R.id.rv_hourly_layout);
         cv_hourly_wrapper = findViewById(R.id.cv_hourly_wrapper);
         aqiText = findViewById(R.id.tv_aqi);
@@ -346,6 +348,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
 
         forecastLayout.removeAllViews();
+        tv_forecast_title.setText(getString(R.string.forecast_title,weather.getDailyForecast().size()));
         for (DailyForecast forecast : weather.getDailyForecast()) {
             View inflate = LayoutInflater.from(this)
                     .inflate(R.layout.layout_weather_forecast_item,
@@ -379,7 +382,6 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     }
 
     private String generateDateText(Date theDate) {
-        String dateTxt = (theDate.getMonth()+1) + "-" + theDate.getDate()+" ";
         int month = theDate.getMonth();
         int date = theDate.getDate();
         int day = theDate.getDay();
@@ -387,10 +389,14 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         int nowMonth = now.getMonth();
         int nowDate = now.getDate();
 
+        String dateTxt;
+
         if(month==nowMonth&&date==nowDate){
             dateTxt = "今天   ";
         }else if(month==nowMonth&&date==nowDate+1){
             dateTxt = "明天   ";
+        }else{
+            dateTxt = (month+1) + "-" + (date>9?date:("0"+date))+" ";
         }
         return dateTxt+MyConst.weekTxt[day];
     }
