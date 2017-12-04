@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.wjk.jweather.R;
 import com.wjk.jweather.db.UsualCity;
 import com.wjk.jweather.listener.CityChangeListener;
+import com.wjk.jweather.util.CommonUtil;
 
 import java.util.List;
 
@@ -56,15 +57,11 @@ public class UsualCityAdapter extends RecyclerView.Adapter {
         UsualCity city = cities.get(position);
         String cityName = city.getParentAreaCN();
         String blockName = city.getAreaCN();
-        String currAreaTitle;
-        if (cityName.equals(blockName)) {
-            currAreaTitle = city.getProvinceCN() + "·" + blockName;
-        } else {
-            currAreaTitle = cityName + "·" +blockName ;
-        }
+        String currAreaTitle = CommonUtil.makeAreaTile(blockName,
+                cityName,
+                city.getProvinceCN(),"·");
         myHolder.cityNameView.setText(currAreaTitle);
         myHolder.cityNameView.setSelected(city.isLoveCity()==1);
-        myHolder.cityNameView.setSelected(true);
     }
 
     @Override

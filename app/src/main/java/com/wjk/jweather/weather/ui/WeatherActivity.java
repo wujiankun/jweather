@@ -30,6 +30,7 @@ import com.wjk.jweather.R;
 import com.wjk.jweather.about.AboutMeActivity;
 import com.wjk.jweather.base.BaseActivity;
 import com.wjk.jweather.db.WeatherDataParseBean;
+import com.wjk.jweather.util.CommonUtil;
 import com.wjk.jweather.util.NetUtil;
 import com.wjk.jweather.weather.adapter.MutiItemsAdapter;
 import com.wjk.jweather.weather.adapter.UsualCityAdapter;
@@ -318,12 +319,9 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @SuppressLint("SetTextI18n")
     @Override
     public void showWeatherInfo(Heweather6 weather) {
-        String currAreaTitle;
-        if (weather.getBasic().getLocation().equals(weather.getBasic().getParentCity())) {
-            currAreaTitle = weather.getBasic().getAdminArea() + " " + weather.getBasic().getLocation();
-        } else {
-            currAreaTitle = weather.getBasic().getParentCity() + " " + weather.getBasic().getLocation();
-        }
+        String currAreaTitle = CommonUtil.makeAreaTile(weather.getBasic().getLocation(),
+                weather.getBasic().getParentCity(),
+                weather.getBasic().getAdminArea()," ");
         setTitle(currAreaTitle);
         titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
         degreeText.setText(weather.getNow().getTmp() + "℃");
