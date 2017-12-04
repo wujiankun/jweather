@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -115,7 +116,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         sr_pull_fresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                presenter.loadData(mWeatherId,mParentWeatherId);
+                presenter.loadData(mWeatherId, mParentWeatherId);
             }
         });
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -127,7 +128,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         setRetryClick(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.loadData(mWeatherId,mParentWeatherId);
+                presenter.loadData(mWeatherId, mParentWeatherId);
             }
         });
     }
@@ -141,7 +142,8 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         mUsualCityAdapter = new UsualCityAdapter(cities, new CityChangeListener() {
             @Override
             public void onCityChange(BaseAreaParseBean city, int position) {
-                mWeatherId = city.getAreaCode();mParentWeatherId = city.getParentAreaCN();
+                mWeatherId = city.getAreaCode();
+                mParentWeatherId = city.getParentAreaCN();
                 initData();
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawers();
@@ -158,22 +160,23 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mUsualCityAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
     private void switchDefaultCity(BaseAreaParseBean county) {
         ContentValues values = new ContentValues();
-        values.put("isLoveCity",0);
+        values.put("isLoveCity", 0);
         //查询出默认城市的id然后修改为非默认
         List<UsualCity> usualCities = DataSupport.where("isLoveCity=?", "1")
                 .find(UsualCity.class);
-        if(usualCities.size()>0){
-            DataSupport.update(UsualCity.class,values,usualCities.get(0).getId());
+        if (usualCities.size() > 0) {
+            DataSupport.update(UsualCity.class, values, usualCities.get(0).getId());
         }
         List<UsualCity> temp2 = DataSupport.where("areaCode=?", county.getAreaCode())
                 .find(UsualCity.class);
-        if(temp2.size()>0){
-            values.put("isLoveCity",1);
-            DataSupport.update(UsualCity.class,values,temp2.get(0).getId());
+        if (temp2.size() > 0) {
+            values.put("isLoveCity", 1);
+            DataSupport.update(UsualCity.class, values, temp2.get(0).getId());
         }
         mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
     }
@@ -181,11 +184,11 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private void deleteCity(BaseAreaParseBean county) {
         List<UsualCity> temp2 = DataSupport.where("areaCode=?", county.getAreaCode())
                 .find(UsualCity.class);
-        if(temp2.size()>0){
+        if (temp2.size() > 0) {
             final UsualCity usualCity = temp2.get(0);
             new AlertDialog.Builder(this)
                     .setTitle("删除地区")
-                    .setMessage("您确定要删除"+usualCity.getAreaCN()+"吗？")
+                    .setMessage("您确定要删除" + usualCity.getAreaCN() + "吗？")
                     .setPositiveButton("删了", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -218,7 +221,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     protected void initData() {
         if (NetUtil.getAPNType(this) > 0) {
             showLoading();
-            presenter.loadData(mWeatherId,mParentWeatherId);
+            presenter.loadData(mWeatherId, mParentWeatherId);
         } else {
             WeatherDataParseBean bean = presenter.getDataByWeatherId(mWeatherId, MyConst.COMMON_WEATHER_URL);
             if (bean != null) {
@@ -231,7 +234,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
                     showAqi(aiq6);
                 }
                 showNoNetTip();
-            }else{
+            } else {
                 //无网无缓存
                 showGetWeatherFail("咋回事儿啊？");
                 showNetError();
@@ -280,7 +283,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             mUsualCityAdapter.setDataList(DataSupport.findAll(UsualCity.class));
             mWeatherId = intent.getStringExtra("weather_id");
             mParentWeatherId = getIntent().getStringExtra("parent_id");
-            presenter.loadData(mWeatherId,mParentWeatherId);
+            presenter.loadData(mWeatherId, mParentWeatherId);
         }
         super.onNewIntent(intent);
     }
@@ -315,26 +318,32 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @SuppressLint("SetTextI18n")
     @Override
     public void showWeatherInfo(Heweather6 weather) {
-        setTitle(weather.getBasic().getLocation() + " " + weather.getBasic().getParentCity());
+        String currAreaTitle;
+        if (weather.getBasic().getLocation().equals(weather.getBasic().getParentCity())) {
+            currAreaTitle = weather.getBasic().getAdminArea() + " " + weather.getBasic().getLocation();
+        } else {
+            currAreaTitle = weather.getBasic().getParentCity() + " " + weather.getBasic().getLocation();
+        }
+        setTitle(currAreaTitle);
         titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
         degreeText.setText(weather.getNow().getTmp() + "℃");
         weatherInfoText.setText(weather.getNow().getCondTxt());
         setBg(weather.getNow().getCondTxt());
         nowWind.setText(weather.getNow().getWindDir() + "-" + weather.getNow().getWindSc());
         String condCode = weather.getNow().getCondCode();
-        Glide.with(this).load("file:///android_asset/ico/"+condCode+".png").into(iv_weather_ico);
+        Glide.with(this).load("file:///android_asset/ico/" + condCode + ".png").into(iv_weather_ico);
 
 
         List<Hourly> hourly = weather.getHourly();
-        if (hourly != null&&hourly.size()>0) {
+        if (hourly != null && hourly.size() > 0) {
             MutiItemsAdapter adapter = new MutiItemsAdapter(this);
             RecyclerView.LayoutManager layoutManager =
-                    new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false);
+                    new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
             hourlyLayout.setLayoutManager(layoutManager);
             hourlyLayout.setAdapter(adapter);
             adapter.setDataList(hourly);
             cv_hourly_wrapper.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             cv_hourly_wrapper.setVisibility(View.GONE);
         }
         for (int i = 0; i < weather.getLifestyle().size(); i++) {
@@ -348,7 +357,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
 
         forecastLayout.removeAllViews();
-        tv_forecast_title.setText(getString(R.string.forecast_title,weather.getDailyForecast().size()));
+        tv_forecast_title.setText(getString(R.string.forecast_title, weather.getDailyForecast().size()));
         for (DailyForecast forecast : weather.getDailyForecast()) {
             View inflate = LayoutInflater.from(this)
                     .inflate(R.layout.layout_weather_forecast_item,
@@ -364,10 +373,10 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             //info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
             temp.setText(forecast.getTmpMin() + "℃" + "~" + forecast.getTmpMax() + "℃");
             String windDir = forecast.getWindDir();
-            windDir = windDir.replace("无持续风向","")+" ";
-            wind.setText(windDir+forecast.getWindSc());
-            Glide.with(this).load("file:///android_asset/ico/"+forecast.getCondCodeD()+".png").into(iv_weather_ico1);
-            Glide.with(this).load("file:///android_asset/ico/"+forecast.getCondCodeN()+".png").into(iv_weather_ico2);
+            windDir = windDir.replace("无持续风向", "") + " ";
+            wind.setText(windDir + forecast.getWindSc());
+            Glide.with(this).load("file:///android_asset/ico/" + forecast.getCondCodeD() + ".png").into(iv_weather_ico1);
+            Glide.with(this).load("file:///android_asset/ico/" + forecast.getCondCodeN() + ".png").into(iv_weather_ico2);
             forecastLayout.addView(inflate);
         }
 
@@ -391,23 +400,23 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
         String dateTxt;
 
-        if(month==nowMonth&&date==nowDate){
+        if (month == nowMonth && date == nowDate) {
             dateTxt = "今天   ";
-        }else if(month==nowMonth&&date==nowDate+1){
+        } else if (month == nowMonth && date == nowDate + 1) {
             dateTxt = "明天   ";
-        }else{
-            dateTxt = (month+1) + "-" + (date>9?date:("0"+date))+" ";
+        } else {
+            dateTxt = (month + 1) + "-" + (date > 9 ? date : ("0" + date)) + " ";
         }
-        return dateTxt+MyConst.weekTxt[day];
+        return dateTxt + MyConst.weekTxt[day];
     }
 
     @Override
     public void showGetWeatherFail(String msg) {
         sr_pull_fresh.setRefreshing(false);
         weatherLayout.setVisibility(View.GONE);
-        if(msg.contains("解析")){
+        if (msg.contains("解析")) {
             showNoData();
-        }else{
+        } else {
             showNetError();
         }
     }
@@ -425,7 +434,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @Override
     public void showAqiFail(String msg) {
         weatherAiqLayout.setVisibility(View.GONE);
-        if(msg.contains("解析")){
+        if (msg.contains("解析")) {
         }
     }
 

@@ -56,8 +56,15 @@ public class UsualCityAdapter extends RecyclerView.Adapter {
         UsualCity city = cities.get(position);
         String cityName = city.getParentAreaCN();
         String blockName = city.getAreaCN();
-        String append = city.isLoveCity()==1?"* ":"";
-        myHolder.cityNameView.setText(append+cityName+"·"+blockName);
+        String currAreaTitle;
+        if (cityName.equals(blockName)) {
+            currAreaTitle = city.getProvinceCN() + "·" + blockName;
+        } else {
+            currAreaTitle = cityName + "·" +blockName ;
+        }
+        myHolder.cityNameView.setText(currAreaTitle);
+        myHolder.cityNameView.setSelected(city.isLoveCity()==1);
+        myHolder.cityNameView.setSelected(true);
     }
 
     @Override

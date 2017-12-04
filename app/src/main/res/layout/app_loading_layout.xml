@@ -7,6 +7,7 @@
 
     <!-- 正在加载 -->
     <RelativeLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/loading_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,28 +15,31 @@
         android:orientation="vertical"
         android:visibility="visible">
 
-        <ImageView
-            android:layout_marginTop="?attr/actionBarSize"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/bg_watting1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
         <View
             android:background="@color/colorBgWaitting"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
 
+        <com.wjk.jweather.view.CircleImageView
+            android:id="@+id/cv_my_honey"
+            android:layout_centerInParent="true"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
+            app:border_color="@color/colorAccent"
+            app:border_width="4dp"
+            android:src="@mipmap/bg_watting1" />
+
         <TextView
-            android:layout_marginBottom="60dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/cv_my_honey"
             android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
             android:id="@+id/tv_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="请稍等一下..."
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorAccent"
             android:textSize="@dimen/common_text_size" />
     </RelativeLayout>
 

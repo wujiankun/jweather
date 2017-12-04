@@ -166,7 +166,7 @@ public class LoadingView extends RelativeLayout {
      * 隐藏
      */
     public void hide() {
-        setVisibility(GONE);
+        //setVisibility(GONE);
     }
 
     public void setNoDataHint(int resId) {
