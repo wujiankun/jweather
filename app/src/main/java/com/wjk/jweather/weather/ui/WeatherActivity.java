@@ -12,10 +12,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,28 +29,28 @@ import com.bumptech.glide.Glide;
 import com.wjk.jweather.R;
 import com.wjk.jweather.about.AboutMeActivity;
 import com.wjk.jweather.base.BaseActivity;
+import com.wjk.jweather.db.BaseAreaParseBean;
+import com.wjk.jweather.db.UsualCity;
 import com.wjk.jweather.db.WeatherDataParseBean;
+import com.wjk.jweather.listener.CityChangeListener;
+import com.wjk.jweather.location.LocateSelectActivity;
 import com.wjk.jweather.util.CommonUtil;
+import com.wjk.jweather.util.JsonUtil;
+import com.wjk.jweather.util.MyConst;
 import com.wjk.jweather.util.NetUtil;
 import com.wjk.jweather.weather.adapter.MutiItemsAdapter;
 import com.wjk.jweather.weather.adapter.UsualCityAdapter;
 import com.wjk.jweather.weather.bean.airbeen.AirNowCity;
-import com.wjk.jweather.db.BaseAreaParseBean;
-import com.wjk.jweather.db.UsualCity;
-import com.wjk.jweather.listener.CityChangeListener;
-import com.wjk.jweather.location.LocateSelectActivity;
-import com.wjk.jweather.util.MyConst;
-import com.wjk.jweather.util.JsonUtil;
 import com.wjk.jweather.weather.bean.weatherbeen.DailyForecast;
 import com.wjk.jweather.weather.bean.weatherbeen.Heweather6;
 import com.wjk.jweather.weather.bean.weatherbeen.Hourly;
+import com.wjk.jweather.weather.bean.weatherbeen.Lifestyle;
 import com.wjk.jweather.weather.bean.weatherbeen.LifestyleMap;
 import com.wjk.jweather.weather.presenter.WeatherPresenter;
 
 import org.litepal.crud.DataSupport;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class WeatherActivity extends BaseActivity implements WeatherPresenter.OnUiListener {
@@ -59,7 +59,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private TextView titleUpdateTime;
     private TextView degreeText;
     private TextView weatherInfoText;
-    private LinearLayout forecastLayout;
+    private RecyclerView forecastLayout;
     private RecyclerView hourlyLayout;
     private TextView aqiText;
     private TextView pm25Text;
@@ -72,12 +72,18 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private UsualCityAdapter mUsualCityAdapter;
     private String mWeatherId;
     private String mParentWeatherId;
-    private LinearLayout lifeStyleLayout;
+    private GridLayout lifeStyleLayout;
     private ViewGroup weatherAiqLayout;
     private WeatherPresenter presenter;
     private ImageView iv_weather_ico;
     private View cv_hourly_wrapper;
     private TextView tv_forecast_title;
+    private LinearLayout ll_daily_forecast_wrapper;
+    private TextView tv_air_co;
+    private TextView tv_so2;
+    private TextView tv_o3;
+    private TextView tv_no2;
+    private TextView tv_air_main;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,19 +106,27 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         degreeText = findViewById(R.id.tv_degree);
         iv_weather_ico = findViewById(R.id.iv_weather_ico);
         weatherInfoText = findViewById(R.id.tv_weather_info);
-        forecastLayout = findViewById(R.id.ll_forecast_layout);
+        ll_daily_forecast_wrapper = findViewById(R.id.ll_daily_forecast_wrapper);
+        forecastLayout = findViewById(R.id.rv_forecast_layout);
         tv_forecast_title = findViewById(R.id.tv_forecast_title);
         hourlyLayout = findViewById(R.id.rv_hourly_layout);
         cv_hourly_wrapper = findViewById(R.id.cv_hourly_wrapper);
+
         aqiText = findViewById(R.id.tv_aqi);
         pm25Text = findViewById(R.id.tv_pm25);
         pm10 = findViewById(R.id.tv_pm10);
+        tv_air_co = findViewById(R.id.tv_air_co);
+        tv_so2 = findViewById(R.id.tv_so2);
+        tv_o3 = findViewById(R.id.tv_o3);
+        tv_no2 = findViewById(R.id.tv_no2);
+        tv_air_main = findViewById(R.id.tv_air_main);
         airQuality = findViewById(R.id.tv_air_quality);
+
         nowWind = findViewById(R.id.tv_now_wind);
 
         imageBg = findViewById(R.id.iv_bg_pic);
-        lifeStyleLayout = findViewById(R.id.ll_life_style_layout);
-        weatherAiqLayout = findViewById(R.id.fl_weather_aqi_layout);
+        lifeStyleLayout = findViewById(R.id.gl_life_style_layout);
+        weatherAiqLayout = findViewById(R.id.ll_weather_aqi_layout);
         sr_pull_fresh.setColorSchemeResources(R.color.colorPrimary);
         sr_pull_fresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -323,6 +337,26 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
                 weather.getBasic().getParentCity(),
                 weather.getBasic().getAdminArea()," ");
         setTitle(currAreaTitle);
+
+        initWeatherHeader(weather);
+
+        initHourlyForecast(weather);
+
+        initLifeStyle(weather);
+
+        initDailyForecast(weather);
+
+        if (sr_pull_fresh.isRefreshing()) {
+            sr_pull_fresh.setRefreshing(false);
+            Toast.makeText(WeatherActivity.this,
+                    "更新成功！", Toast.LENGTH_SHORT).show();
+
+        }
+        weatherLayout.setVisibility(View.VISIBLE);
+        hideLoading();
+    }
+
+    private void initWeatherHeader(Heweather6 weather) {
         titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
         degreeText.setText(weather.getNow().getTmp() + "℃");
         weatherInfoText.setText(weather.getNow().getCondTxt());
@@ -330,8 +364,9 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         nowWind.setText(weather.getNow().getWindDir() + "-" + weather.getNow().getWindSc());
         String condCode = weather.getNow().getCondCode();
         Glide.with(this).load("file:///android_asset/ico/" + condCode + ".png").into(iv_weather_ico);
+    }
 
-
+    private void initHourlyForecast(Heweather6 weather) {
         List<Hourly> hourly = weather.getHourly();
         if (hourly != null && hourly.size() > 0) {
             MutiItemsAdapter adapter = new MutiItemsAdapter(this);
@@ -344,69 +379,51 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         } else {
             cv_hourly_wrapper.setVisibility(View.GONE);
         }
-        for (int i = 0; i < weather.getLifestyle().size(); i++) {
-            String type = weather.getLifestyle().get(i).getType();
-            String typeName = LifestyleMap.styleVales.get(type);
-            String text = typeName + "：" + weather.getLifestyle().get(i).getBrf() + "\n" + weather.getLifestyle().get(i).getTxt();
-            TextView itemView = (TextView) lifeStyleLayout.getChildAt(i + 1);
-            itemView.setText(text);
-        }
-        weatherLayout.setVisibility(View.VISIBLE);
-
-
-        forecastLayout.removeAllViews();
-        tv_forecast_title.setText(getString(R.string.forecast_title, weather.getDailyForecast().size()));
-        for (DailyForecast forecast : weather.getDailyForecast()) {
-            View inflate = LayoutInflater.from(this)
-                    .inflate(R.layout.layout_weather_forecast_item,
-                            forecastLayout, false);
-            TextView date = inflate.findViewById(R.id.tv_date);
-            ImageView iv_weather_ico1 = inflate.findViewById(R.id.iv_weather_ico1);
-            ImageView iv_weather_ico2 = inflate.findViewById(R.id.iv_weather_ico2);
-            TextView temp = inflate.findViewById(R.id.tv_temp);
-            TextView wind = inflate.findViewById(R.id.tv_wind);
-            Date theDate = forecast.getDate();
-            String dateText = generateDateText(theDate);
-            date.setText(dateText);
-            //info.setText(forecast.getCondTxtD() + "-" + forecast.getCondTxtN());
-            temp.setText(forecast.getTmpMin() + "℃" + "~" + forecast.getTmpMax() + "℃");
-            String windDir = forecast.getWindDir();
-            windDir = windDir.replace("无持续风向", "") + " ";
-            wind.setText(windDir + forecast.getWindSc());
-            Glide.with(this).load("file:///android_asset/ico/" + forecast.getCondCodeD() + ".png").into(iv_weather_ico1);
-            Glide.with(this).load("file:///android_asset/ico/" + forecast.getCondCodeN() + ".png").into(iv_weather_ico2);
-            forecastLayout.addView(inflate);
-        }
-
-
-        if (sr_pull_fresh.isRefreshing()) {
-            sr_pull_fresh.setRefreshing(false);
-            Toast.makeText(WeatherActivity.this,
-                    "更新成功！", Toast.LENGTH_SHORT).show();
-
-        }
-        hideLoading();
     }
 
-    private String generateDateText(Date theDate) {
-        int month = theDate.getMonth();
-        int date = theDate.getDate();
-        int day = theDate.getDay();
-        Date now = new Date();
-        int nowMonth = now.getMonth();
-        int nowDate = now.getDate();
-
-        String dateTxt;
-
-        if (month == nowMonth && date == nowDate) {
-            dateTxt = "今天   ";
-        } else if (month == nowMonth && date == nowDate + 1) {
-            dateTxt = "明天   ";
+    private void initDailyForecast(Heweather6 weather) {
+        List<DailyForecast> dailyForecasts = weather.getDailyForecast();
+        if (dailyForecasts != null && dailyForecasts.size() > 0) {
+            tv_forecast_title.setText(getString(R.string.forecast_title, weather.getDailyForecast().size()));
+            MutiItemsAdapter adapter = new MutiItemsAdapter(this,MutiItemsAdapter.TYPE_DAILY);
+            RecyclerView.LayoutManager layoutManager =
+                    new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+            forecastLayout.setLayoutManager(layoutManager);
+            forecastLayout.setAdapter(adapter);
+            adapter.setDataList(dailyForecasts);
+            ll_daily_forecast_wrapper.setVisibility(View.VISIBLE);
         } else {
-            dateTxt = (month + 1) + "-" + (date > 9 ? date : ("0" + date)) + " ";
+            ll_daily_forecast_wrapper.setVisibility(View.GONE);
         }
-        return dateTxt + MyConst.weekTxt[day];
     }
+
+    private void initLifeStyle(Heweather6 weather) {
+        for (int i = 0; i < weather.getLifestyle().size(); i++) {
+            Lifestyle lifestyle = weather.getLifestyle().get(i);
+            String type = lifestyle.getType();
+            String typeName = LifestyleMap.styleVales.get(type);
+            String text = typeName + "\n\n" + lifestyle.getBrf() ;
+                    //+ "\n" + weather.getLifestyle().get(i).getTxt();
+            TextView itemView = (TextView) lifeStyleLayout.getChildAt(i);
+            itemView.setText(text);
+            itemView.setOnClickListener(new LifeStyleItemOnclickListener(lifestyle));
+        }
+    }
+
+    private class LifeStyleItemOnclickListener implements View.OnClickListener{
+
+        private final Lifestyle lifestyle;
+
+        public LifeStyleItemOnclickListener(Lifestyle lifestyle){
+            this.lifestyle = lifestyle;
+        }
+
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(WeatherActivity.this, lifestyle.getTxt(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public void showGetWeatherFail(String msg) {
@@ -422,10 +439,17 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     @Override
     public void showAqi(com.wjk.jweather.weather.bean.airbeen.Heweather6 aiqObj) {
         AirNowCity airNow = aiqObj.getAirNowCity();
-        aqiText.setText(airNow.getAqi());
-        pm25Text.setText(airNow.getPm25());
-        pm10.setText(airNow.getPm10());
         airQuality.setText(airNow.getQlty());
+
+        aqiText.setText("AQI: "+airNow.getAqi());
+        pm25Text.setText("PM2.5: "+airNow.getPm25());
+        pm10.setText("PM10: "+airNow.getPm10());
+        tv_air_co.setText("CO: "+airNow.getCo());
+        tv_so2.setText("SO2: "+airNow.getSo2());
+        tv_o3.setText("O3: "+airNow.getO3());
+        tv_no2.setText("NO2: "+airNow.getNo2());
+        tv_air_main.setText("主污染:"+airNow.getMain());
+
         weatherAiqLayout.setVisibility(View.VISIBLE);
     }
 

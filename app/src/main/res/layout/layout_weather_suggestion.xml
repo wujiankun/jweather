@@ -3,84 +3,118 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/common_page_horzien_margin"
     android:layout_marginLeft="@dimen/common_page_horzien_margin"
     android:layout_marginRight="@dimen/common_page_horzien_margin"
+    android:layout_marginTop="@dimen/common_page_horzien_margin"
     app:cardBackgroundColor="@color/colorBgPrimary"
     app:cardCornerRadius="@dimen/card_corner_radius"
     app:cardElevation="0dp">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ll_life_style_layout"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:orientation="vertical">
-        <!--生活建议信息-->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/common_page_horzien_margin"
-            android:layout_marginTop="@dimen/common_page_horzien_margin"
-            android:text="生活建议"
-            android:textColor="#fff"
-            android:textSize="@dimen/common_text_size" />
+        android:padding="@dimen/common_page_horzien_margin"
+        android:text="生活建议"
+        android:textColor="#fff"
+        android:textSize="@dimen/common_text_size" />
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/gl_life_style_layout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="38dp"
+        android:padding="5dp"
+        app:columnCount="3"
+        app:rowCount="3"
+        app:orientation="horizontal">
 
         <TextView
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
             android:id="@+id/tv_air"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
         <TextView
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
             android:id="@+id/tv_drsg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
         <TextView
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
             android:id="@+id/tv_flu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
         <TextView
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
             android:id="@+id/tv_trav"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
         <TextView
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
             android:id="@+id/tv_comfort"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
         <TextView
             android:id="@+id/tv_uv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
         <TextView
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
             android:id="@+id/tv_sport"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
         <TextView
+            android:layout_margin="5dp"
+            android:background="@color/colorBgPrimary"
             android:id="@+id/tv_car_wash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
-            android:textColor="#fff" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1" />
 
-    </LinearLayout>
+    </android.support.v7.widget.GridLayout>
 </android.support.v7.widget.CardView>
