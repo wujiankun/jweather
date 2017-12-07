@@ -1,13 +1,10 @@
 package com.wjk.jweather.view;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
-import android.text.style.SubscriptSpan;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
