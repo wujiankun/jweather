@@ -61,9 +61,9 @@
                     android:orientation="vertical"
                     android:paddingBottom="?attr/actionBarSize">
                     <include layout="@layout/layout_weather_header" />
+                    <include layout="@layout/layout_weather_aqi"/>
                     <include layout="@layout/layout_hourly_forecast" />
                     <include layout="@layout/layout_weather_forecast" />
-                    <include layout="@layout/layout_weather_aqi"/>
                     <include layout="@layout/layout_weather_suggestion" />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>

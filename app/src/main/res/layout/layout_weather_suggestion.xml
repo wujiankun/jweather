@@ -21,7 +21,7 @@
     <android.support.v7.widget.GridLayout
         android:id="@+id/gl_life_style_layout"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="260dp"
         android:layout_marginTop="38dp"
         android:padding="5dp"
         app:columnCount="3"
@@ -30,7 +30,7 @@
 
         <TextView
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:id="@+id/tv_air"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -41,7 +41,7 @@
 
         <TextView
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:id="@+id/tv_drsg"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -52,7 +52,7 @@
 
         <TextView
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:id="@+id/tv_flu"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -63,7 +63,7 @@
 
         <TextView
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:id="@+id/tv_trav"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -74,7 +74,7 @@
 
         <TextView
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:id="@+id/tv_comfort"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -88,7 +88,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:gravity="center"
             android:textColor="#fff"
             app:layout_columnWeight="1"
@@ -96,7 +96,7 @@
 
         <TextView
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:id="@+id/tv_sport"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -107,7 +107,7 @@
 
         <TextView
             android:layout_margin="5dp"
-            android:background="@color/colorBgPrimary"
+            android:background="@drawable/selector_bg_grid_item"
             android:id="@+id/tv_car_wash"
             android:layout_width="0dp"
             android:layout_height="0dp"
