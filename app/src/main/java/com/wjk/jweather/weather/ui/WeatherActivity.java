@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
@@ -306,21 +307,19 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private void setBg(String state) {
         int bgId = R.mipmap.default_bg;
         if (state.contains("晴")) {
-            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-            if (hour > 18) {
+            if (CommonUtil.isNigthNow()) {
                 bgId = R.mipmap.sunny_night;
             } else {
                 bgId = R.mipmap.sunny;
             }
         } else if (state.contains("多云")) {
-            bgId = R.mipmap.cloudy;
+            bgId = R.mipmap.cloudy_day;
         } else if (state.contains("雾")) {
             bgId = R.mipmap.frog;
         } else if (state.contains("雨")) {
             bgId = R.mipmap.rainy;
         } else if (state.contains("雪")) {
-            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-            if (hour > 17) {
+            if (CommonUtil.isNigthNow()) {
                 bgId = R.mipmap.snow_night;
             } else {
                 bgId = R.mipmap.snow;
@@ -359,11 +358,18 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private void initWeatherHeader(Heweather6 weather) {
         titleUpdateTime.setText("更新时间：" + weather.getUpdate().getLoc());
         degreeText.setText(weather.getNow().getTmp() + "℃");
+        Typeface typeFace = Typeface.createFromAsset(getAssets(),"fonts/mjnumber.ttf");
+        // 应用字体
+        degreeText.setTypeface(typeFace);
         weatherInfoText.setText(weather.getNow().getCondTxt());
         setBg(weather.getNow().getCondTxt());
         nowWind.setText(weather.getNow().getWindDir() + "-" + weather.getNow().getWindSc());
         String condCode = weather.getNow().getCondCode();
-        Glide.with(this).load("file:///android_asset/ico/" + condCode + ".png").into(iv_weather_ico);
+        if(CommonUtil.isNigthNow()){
+            CommonUtil.showWeatherIcoNight(this,condCode,iv_weather_ico);
+        }else{
+            CommonUtil.showWeatherIcoDay(this,condCode,iv_weather_ico);
+        }
     }
 
     private void initHourlyForecast(Heweather6 weather) {

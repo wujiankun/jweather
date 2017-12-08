@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.wjk.jweather.R;
+import com.wjk.jweather.util.CommonUtil;
 import com.wjk.jweather.util.MyConst;
 import com.wjk.jweather.weather.bean.weatherbeen.DailyForecast;
 import com.wjk.jweather.weather.bean.weatherbeen.Hourly;
@@ -63,12 +64,17 @@ public class MutiItemsAdapter extends RecyclerView.Adapter {
         if(mType==TYPE_HOURLY){
             HourlyHolder myHolder = (HourlyHolder) holder;
             Hourly hourly = (Hourly) items.get(position);
-            myHolder.tv_time.setText(hourly.getTime().split(" ")[1]);
+            String theTimeStr = hourly.getTime().split(" ")[1];
+            myHolder.tv_time.setText(theTimeStr);
             myHolder.tv_weather.setText(hourly.getCondTxt());
             myHolder.tv_temp.setText(hourly.getTmp() + "℃");
             myHolder.tv_wind.setText(hourly.getWindDir() + "-" + hourly.getWindSc());
             String condCode = hourly.getCondCode();
-            Glide.with(mContext).load("file:///android_asset/ico/"+condCode+".png").into(myHolder.iv_weather_ico);
+            if(CommonUtil.isNigthNow(Integer.parseInt(theTimeStr.split(":")[0]))){
+                CommonUtil.showWeatherIcoNight(mContext,condCode,myHolder.iv_weather_ico);
+            }else {
+                CommonUtil.showWeatherIcoDay(mContext,condCode,myHolder.iv_weather_ico);
+            }
         }else{
             DailyHolder dHolder = (DailyHolder) holder;
             DailyForecast forecast = (DailyForecast) items.get(position);
@@ -77,10 +83,10 @@ public class MutiItemsAdapter extends RecyclerView.Adapter {
             String dateText = generateDateText(theDate);
             dHolder.tv_date.setText(dateText);
             dHolder.tv_weather_info_d.setText(forecast.getCondTxtD());
-            Glide.with(mContext).load("file:///android_asset/ico/" + forecast.getCondCodeD() + ".png").into(dHolder.iv_weather_ico_d);
+            CommonUtil.showWeatherIcoDay(mContext,forecast.getCondCodeD(),dHolder.iv_weather_ico_d);
             dHolder.tv_temp_max.setText(forecast.getTmpMax());
             dHolder.tv_temp_min.setText(forecast.getTmpMin());
-            Glide.with(mContext).load("file:///android_asset/ico/" + forecast.getCondCodeN() + ".png").into(dHolder.iv_weather_ico_n);
+            CommonUtil.showWeatherIcoNight(mContext,forecast.getCondCodeN(),dHolder.iv_weather_ico_n);
             dHolder.tv_weather_info_n.setText(forecast.getCondTxtN());
             dHolder.tv_wind_dir.setText(forecast.getWindDir());
             dHolder.tv_wind_level.setText(forecast.getWindSc());
