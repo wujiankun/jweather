@@ -2,10 +2,15 @@ package com.wjk.jweather.util;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.wjk.jweather.R;
+import com.wjk.jweather.weather.ui.WeatherActivity;
 
 import org.litepal.util.LogUtil;
 
@@ -91,5 +96,15 @@ public class CommonUtil {
         }else{
             return hour >= 18;
         }
+    }
+
+    public static ViewGroup showTheDialog(Context context,int layoutId){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        //自定义布局
+        LayoutInflater inflater = LayoutInflater.from(context);
+        ViewGroup view = (ViewGroup) inflater.inflate(layoutId, null);
+        builder.setView(view);
+        builder.show();
+        return view;
     }
 }

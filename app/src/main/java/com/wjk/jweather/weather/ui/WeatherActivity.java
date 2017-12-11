@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
@@ -53,7 +54,6 @@ import com.wjk.jweather.weather.presenter.WeatherPresenter;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.Calendar;
 import java.util.List;
 
 public class WeatherActivity extends BaseActivity implements WeatherPresenter.OnUiListener {
@@ -267,6 +267,14 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     }
 
     @Override
+    public void showLoading() {
+        //界面上已有天气数据在显示时，不显示加载背景
+        if(weatherLayout.getVisibility()!=View.VISIBLE){
+            super.showLoading();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -310,20 +318,36 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             if (CommonUtil.isNigthNow()) {
                 bgId = R.mipmap.sunny_night;
             } else {
-                bgId = R.mipmap.sunny;
+                bgId = R.mipmap.sunny_day;
             }
         } else if (state.contains("多云")) {
-            bgId = R.mipmap.cloudy_day;
+            if (CommonUtil.isNigthNow()) {
+                bgId = R.mipmap.cloudy_night;
+            } else {
+                bgId = R.mipmap.cloudy_day;
+            }
         } else if (state.contains("雾")) {
-            bgId = R.mipmap.frog;
+            if (CommonUtil.isNigthNow()) {
+                bgId = R.mipmap.fog_night;
+            } else {
+                bgId = R.mipmap.fog_day;
+            }
         } else if (state.contains("雨")) {
-            bgId = R.mipmap.rainy;
+            if (CommonUtil.isNigthNow()) {
+                bgId = R.mipmap.rain_night;
+            } else {
+                bgId = R.mipmap.rain_day;
+            }
         } else if (state.contains("雪")) {
             if (CommonUtil.isNigthNow()) {
                 bgId = R.mipmap.snow_night;
             } else {
-                bgId = R.mipmap.snow;
+                bgId = R.mipmap.snow_day;
             }
+        } else if(state.contains("沙")){
+            bgId = R.mipmap.sand_storm;
+        } else if(state.contains("阴天")||state.equals("阴")){
+            bgId = R.mipmap.overcast;
         }
         Glide.with(WeatherActivity.this).load(bgId).into(imageBg);
     }
@@ -363,7 +387,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         degreeText.setTypeface(typeFace);
         weatherInfoText.setText(weather.getNow().getCondTxt());
         setBg(weather.getNow().getCondTxt());
-        nowWind.setText(weather.getNow().getWindDir() + "-" + weather.getNow().getWindSc());
+        nowWind.setText(weather.getNow().getWindDir() + " " + weather.getNow().getWindSc());
         String condCode = weather.getNow().getCondCode();
         if(CommonUtil.isNigthNow()){
             CommonUtil.showWeatherIcoNight(this,condCode,iv_weather_ico);
@@ -408,10 +432,11 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             Lifestyle lifestyle = weather.getLifestyle().get(i);
             String type = lifestyle.getType();
             String typeName = LifestyleMap.styleVales.get(type);
-            String text = typeName + "\n\n" + lifestyle.getBrf();
-            //+ "\n" + weather.getLifestyle().get(i).getTxt();
-            TextView itemView = (TextView) lifeStyleLayout.getChildAt(i);
-            itemView.setText(text);
+            ViewGroup itemView = (ViewGroup) lifeStyleLayout.getChildAt(i);
+            Drawable drawable = getResources().getDrawable(LifestyleMap.styleImages.get(type));
+            ((TextView)itemView.getChildAt(1)).setText(typeName);
+            ((TextView)itemView.getChildAt(2)).setText(lifestyle.getBrf());
+            ((ImageView)itemView.getChildAt(0)).setImageDrawable(drawable);
             itemView.setOnClickListener(new LifeStyleItemOnclickListener(lifestyle));
         }
     }
@@ -426,6 +451,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
         @Override
         public void onClick(View view) {
+
             new AlertDialog.Builder(WeatherActivity.this)
                     .setTitle(lifestyle.getBrf())
                     .setMessage(lifestyle.getTxt())

@@ -14,7 +14,7 @@ android {
     buildTypes {
         debug {
             buildConfigField "boolean", "LOG_DEBUG", "true"
-            buildConfigField "String", "appKey", "\"13545e3a0d9b4ea0be767bb12e0707e5\""
+            //buildConfigField "String", "appKey", "\"13545e3a0d9b4ea0be767bb12e0707e5\""
 
             minifyEnabled false
 
@@ -26,7 +26,7 @@ android {
         }
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
-            buildConfigField "String", "appKey", "\"13545e3a0d9b4ea0be767bb12e0707e5\""
+            //buildConfigField "String", "appKey", "\"13545e3a0d9b4ea0be767bb12e0707e5\""
 
             minifyEnabled false
 

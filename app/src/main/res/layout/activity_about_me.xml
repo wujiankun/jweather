@@ -15,9 +15,10 @@
             android:id="@+id/tool_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:navigationIcon="@mipmap/ic_arrow_back_white_24dp"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="#333"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:popupTheme="@style/OverflowMenuStyle" />
 
     </android.support.design.widget.AppBarLayout>
 

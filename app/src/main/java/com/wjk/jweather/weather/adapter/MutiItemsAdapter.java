@@ -68,7 +68,7 @@ public class MutiItemsAdapter extends RecyclerView.Adapter {
             myHolder.tv_time.setText(theTimeStr);
             myHolder.tv_weather.setText(hourly.getCondTxt());
             myHolder.tv_temp.setText(hourly.getTmp() + "℃");
-            myHolder.tv_wind.setText(hourly.getWindDir() + "-" + hourly.getWindSc());
+            myHolder.tv_wind.setText(hourly.getWindDir() + " " + hourly.getWindSc());
             String condCode = hourly.getCondCode();
             if(CommonUtil.isNigthNow(Integer.parseInt(theTimeStr.split(":")[0]))){
                 CommonUtil.showWeatherIcoNight(mContext,condCode,myHolder.iv_weather_ico);
@@ -84,11 +84,15 @@ public class MutiItemsAdapter extends RecyclerView.Adapter {
             dHolder.tv_date.setText(dateText);
             dHolder.tv_weather_info_d.setText(forecast.getCondTxtD());
             CommonUtil.showWeatherIcoDay(mContext,forecast.getCondCodeD(),dHolder.iv_weather_ico_d);
-            dHolder.tv_temp_max.setText(forecast.getTmpMax());
-            dHolder.tv_temp_min.setText(forecast.getTmpMin());
+            dHolder.tv_temp_max.setText(forecast.getTmpMax() + "℃");
+            dHolder.tv_temp_min.setText(forecast.getTmpMin() + "℃");
             CommonUtil.showWeatherIcoNight(mContext,forecast.getCondCodeN(),dHolder.iv_weather_ico_n);
             dHolder.tv_weather_info_n.setText(forecast.getCondTxtN());
-            dHolder.tv_wind_dir.setText(forecast.getWindDir());
+            if(forecast.getWindDir().equals("无持续风向")){
+                dHolder.tv_wind_dir.setText("无风向");
+            }else {
+                dHolder.tv_wind_dir.setText(forecast.getWindDir());
+            }
             dHolder.tv_wind_level.setText(forecast.getWindSc());
         }
     }

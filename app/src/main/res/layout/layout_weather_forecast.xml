@@ -26,10 +26,10 @@
             android:textSize="@dimen/common_text_size" />
 
         <android.support.v7.widget.RecyclerView
+            android:scrollbars="horizontal"
             android:id="@+id/rv_forecast_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/common_page_horzien_margin"
             />
     </LinearLayout>
 
