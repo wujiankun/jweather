@@ -3,6 +3,7 @@ package com.wjk.jweather.util;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,25 +78,22 @@ public class CommonUtil {
         return false;
     }
 
-    public static boolean isNigthNow(){
+    public static boolean isNightNow(){
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        if(month>=11||month<=3){
-            return hour >= 17;
-        }else{
-            return hour >= 18;
-        }
+        return isNightNow(hour);
     }
 
-    public static boolean isNigthNow(int hour){
+    public static boolean isNightNow(int hour){
+        boolean r;
         Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH) + 1;
         if(month>=11||month<=3){
-            return hour >= 17;
+            r = hour >= 17||hour<6;
         }else{
-            return hour >= 18;
+            r = hour >= 18||hour<5;
         }
+        return r;
     }
 
     public static ViewGroup showTheDialog(Context context,int layoutId){

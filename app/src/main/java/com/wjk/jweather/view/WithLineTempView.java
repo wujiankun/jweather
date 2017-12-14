@@ -72,6 +72,8 @@ public class WithLineTempView extends View {
     public WithLineTempView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         dotRadius = CommonUtil.dip2px(context,dotRadius);
+        defaultHeight = CommonUtil.dip2px(context,defaultHeight);
+        defaultWidth = CommonUtil.dip2px(context,defaultWidth);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.WithLineTempView, defStyle, 0);
         dotRadius = a.getDimension(R.styleable.WithLineTempView_dot_radius, dotRadius);
         dotColor = a.getColor(R.styleable.WithLineTempView_dot_color, dotColor);
@@ -80,11 +82,10 @@ public class WithLineTempView extends View {
         singleRow = a.getBoolean(R.styleable.WithLineTempView_single_row, false);
         if (singleRow) {
             defaultHeight /= 2;
+        }else {
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            defaultWidth = Math.max(defaultWidth,screenWidth/7);
         }
-        defaultHeight = CommonUtil.dip2px(context,defaultHeight);
-        defaultWidth = CommonUtil.dip2px(context,defaultWidth);
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        defaultWidth = Math.max(defaultWidth,screenWidth/7);
         a.recycle();
         init();
     }
@@ -118,7 +119,6 @@ public class WithLineTempView extends View {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         if (widthMode == MeasureSpec.EXACTLY) {
             defaultWidth = MeasureSpec.getSize(widthMeasureSpec);
-
         }
         if (heightMode == MeasureSpec.EXACTLY) {
             defaultHeight = MeasureSpec.getSize(heightMeasureSpec);

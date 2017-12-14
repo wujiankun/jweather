@@ -323,31 +323,31 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
     private void setBg(String state) {
         int bgId = R.mipmap.default_bg;
         if (state.contains("晴")) {
-            if (CommonUtil.isNigthNow()) {
+            if (CommonUtil.isNightNow()) {
                 bgId = R.mipmap.sunny_night;
             } else {
                 bgId = R.mipmap.sunny_day;
             }
         } else if (state.contains("多云")) {
-            if (CommonUtil.isNigthNow()) {
+            if (CommonUtil.isNightNow()) {
                 bgId = R.mipmap.cloudy_night;
             } else {
                 bgId = R.mipmap.cloudy_day;
             }
         } else if (state.contains("雾")) {
-            if (CommonUtil.isNigthNow()) {
+            if (CommonUtil.isNightNow()) {
                 bgId = R.mipmap.fog_night;
             } else {
                 bgId = R.mipmap.fog_day;
             }
         } else if (state.contains("雨")) {
-            if (CommonUtil.isNigthNow()) {
+            if (CommonUtil.isNightNow()) {
                 bgId = R.mipmap.rain_night;
             } else {
                 bgId = R.mipmap.rain_day;
             }
         } else if (state.contains("雪")) {
-            if (CommonUtil.isNigthNow()) {
+            if (CommonUtil.isNightNow()) {
                 bgId = R.mipmap.snow_night;
             } else {
                 bgId = R.mipmap.snow_day;
@@ -397,7 +397,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
         setBg(weather.getNow().getCondTxt());
         nowWind.setText(weather.getNow().getWindDir() + " " + weather.getNow().getWindSc());
         String condCode = weather.getNow().getCondCode();
-        if(CommonUtil.isNigthNow()){
+        if(CommonUtil.isNightNow()){
             CommonUtil.showWeatherIcoNight(this,condCode,iv_weather_ico);
         }else{
             CommonUtil.showWeatherIcoDay(this,condCode,iv_weather_ico);

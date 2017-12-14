@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.wjk.jweather.R;
 import com.wjk.jweather.util.CommonUtil;
 import com.wjk.jweather.util.MyConst;
@@ -75,7 +74,7 @@ public class MutiItemsAdapter extends RecyclerView.Adapter {
             setTempData(items,position,myHolder.vt_temp);
             myHolder.tv_wind.setText(hourly.getWindDir() + " " + hourly.getWindSc());
             String condCode = hourly.getCondCode();
-            if(CommonUtil.isNigthNow(Integer.parseInt(theTimeStr.split(":")[0]))){
+            if(CommonUtil.isNightNow(Integer.parseInt(theTimeStr.split(":")[0]))){
                 CommonUtil.showWeatherIcoNight(mContext,condCode,myHolder.iv_weather_ico);
             }else {
                 CommonUtil.showWeatherIcoDay(mContext,condCode,myHolder.iv_weather_ico);
