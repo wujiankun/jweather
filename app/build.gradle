@@ -7,13 +7,14 @@ android {
         applicationId "com.wjk.jweather"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         debug {
             buildConfigField "boolean", "LOG_DEBUG", "true"
+            buildConfigField "String", "appKey", "\"13545e3a0d9b4ea0be767bb12e0707e5\""
 
             minifyEnabled false
 
@@ -25,6 +26,7 @@ android {
         }
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
+            buildConfigField "String", "appKey", "\"13545e3a0d9b4ea0be767bb12e0707e5\""
 
             minifyEnabled false
 

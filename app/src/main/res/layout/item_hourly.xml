@@ -1,46 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="60dp"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/common_page_horzien_margin"
-    android:layout_marginLeft="@dimen/common_page_horzien_margin"
     android:layout_marginBottom="@dimen/common_page_horzien_margin"
     android:gravity="center_horizontal"
+    android:minWidth="50dp"
     android:orientation="vertical">
 
     <TextView
-        android:textColor="#fff"
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#fff" />
 
     <ImageView
-        android:layout_marginTop="5dp"
         android:id="@+id/iv_weather_ico"
         android:layout_width="30dp"
-        android:layout_height="30dp" />
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp" />
 
     <TextView
-        android:layout_marginTop="5dp"
-        android:textColor="#fff"
         android:id="@+id/tv_weather"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:singleLine="true"
+        android:layout_marginTop="5dp"
+        android:textColor="#fff" />
 
-    <TextView
+    <!--<TextView
         android:layout_marginTop="3dp"
         android:textColor="#fff"
         android:id="@+id/tv_temp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />-->
+    <com.wjk.jweather.view.WithLineTempView
+        android:id="@+id/vt_temp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        app:single_row="true" />
 
     <TextView
-        android:layout_marginTop="5dp"
-        android:textColor="#fff"
-        android:textSize="10sp"
         android:id="@+id/tv_wind"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="#fff"
+        android:textSize="10sp" />
 
 
 </LinearLayout>

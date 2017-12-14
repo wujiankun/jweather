@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:gravity="center"
-    android:background="@color/colorPrimary"
+    android:background="@mipmap/fog_night"
     android:orientation="vertical"
     android:paddingBottom="100dp">
 
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
         android:text="没有该地区对应的天气数据"
-        android:textColor="@android:color/white"
+        android:textColor="#fff"
         android:textSize="@dimen/common_text_size" />
 
 </LinearLayout>

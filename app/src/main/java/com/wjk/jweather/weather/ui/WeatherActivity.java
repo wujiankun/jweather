@@ -18,6 +18,7 @@ import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -89,6 +90,7 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.i("wjk","view activity onCreate");
         presenter = new WeatherPresenter(this);
         mWeatherId = getIntent().getStringExtra("weather_id");
         mParentWeatherId = getIntent().getStringExtra("parent_id");
@@ -136,6 +138,12 @@ public class WeatherActivity extends BaseActivity implements WeatherPresenter.On
             }
         });
         drawerLayout = findViewById(R.id.drawer_layout);
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i("wjk","view activity onResume");
+        super.onResume();
     }
 
     @Override

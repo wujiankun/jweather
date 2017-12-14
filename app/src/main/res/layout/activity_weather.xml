@@ -6,7 +6,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
     tools:context="com.wjk.jweather.weather.ui.WeatherActivity">
 
     <android.support.design.widget.CoordinatorLayout
@@ -56,13 +55,14 @@
                     android:visibility="gone"
                     android:id="@+id/ll_weather_layout"
                     android:layout_width="match_parent"
+                    android:padding="4dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingBottom="?attr/actionBarSize">
                     <include layout="@layout/layout_weather_header" />
-                    <include layout="@layout/layout_weather_aqi"/>
                     <include layout="@layout/layout_hourly_forecast" />
                     <include layout="@layout/layout_weather_forecast" />
+                    <include layout="@layout/layout_weather_aqi"/>
                     <include layout="@layout/layout_weather_suggestion" />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>

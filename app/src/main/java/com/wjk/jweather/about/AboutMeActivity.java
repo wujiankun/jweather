@@ -1,6 +1,7 @@
 package com.wjk.jweather.about;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -73,6 +74,14 @@ public class AboutMeActivity extends BaseActivity {
     @Override
     protected void initData() {
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toolbar toolbar = getToolbar();
+        toolbar.setTitle("关于我");
+        toolbar.setTitleTextColor(Color.WHITE);
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {

@@ -4,8 +4,6 @@
     android:id="@+id/cv_hourly_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/common_page_horzien_margin"
-    android:layout_marginRight="@dimen/common_page_horzien_margin"
     android:layout_marginTop="@dimen/common_page_horzien_margin"
     app:cardBackgroundColor="@color/colorBgPrimary"
     app:cardCornerRadius="@dimen/card_corner_radius"

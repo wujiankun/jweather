@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">@android:color/transparent</color>
-    <color name="colorBgPrimary">#60000000</color>
+    <color name="colorBgPrimary">#50000000</color>
     <color name="colorPrimaryDark">#222</color>
     <color name="colorAccent">#2E6480</color>
     <color name="colorBgWaitting">#60613a09</color>

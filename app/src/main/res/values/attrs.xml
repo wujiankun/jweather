@@ -4,4 +4,11 @@
         <attr name="border_width" format="dimension" />
         <attr name="border_color" format="color" />
     </declare-styleable>
+    <declare-styleable name="WithLineTempView">
+        <attr name="dot_radius" format="dimension" />
+        <attr name="line_color" format="color" />
+        <attr name="dot_color" format="color" />
+        <attr name="text_color" format="color" />
+        <attr name="single_row" format="boolean" />
+    </declare-styleable>
 </resources>
