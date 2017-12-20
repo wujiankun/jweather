@@ -3,7 +3,10 @@
     <color name="colorPrimary">@android:color/transparent</color>
     <color name="colorBgPrimary">#50000000</color>
     <color name="colorPrimaryDark">#222</color>
-    <color name="colorAccent">#2E6480</color>
+    <color name="colorAccent">#8be48a</color>
+    <color name="colorLoading">#3b4f69</color>
     <color name="colorBgWaitting">#60613a09</color>
     <color name="colorTextPrimary">#333</color>
+    <color name="colorBgWhite80">#80ffffff</color>
+    <color name="white">#ffffff</color>
 </resources>

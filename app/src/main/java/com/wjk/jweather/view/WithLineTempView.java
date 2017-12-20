@@ -34,7 +34,7 @@ public class WithLineTempView extends View {
     /**
      * 默认宽度 单位dp
      */
-    private int defaultWidth = 45;
+    private float defaultWidth = 45;
     /**
      * 默认高度 单位dp
      */
@@ -82,9 +82,6 @@ public class WithLineTempView extends View {
         singleRow = a.getBoolean(R.styleable.WithLineTempView_single_row, false);
         if (singleRow) {
             defaultHeight /= 2;
-        }else {
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-            defaultWidth = Math.max(defaultWidth,screenWidth/7);
         }
         a.recycle();
         init();
@@ -123,6 +120,12 @@ public class WithLineTempView extends View {
         if (heightMode == MeasureSpec.EXACTLY) {
             defaultHeight = MeasureSpec.getSize(heightMeasureSpec);
         }
+
+        if (!singleRow) {
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            defaultWidth = Math.max(defaultWidth,screenWidth/7f);
+        }
+
         common_size = defaultWidth / 10f;
         paint_line.setStrokeWidth(common_size /4f);
 
@@ -152,7 +155,7 @@ public class WithLineTempView extends View {
             }
         }
 
-        setMeasuredDimension(defaultWidth, defaultHeight);
+        setMeasuredDimension((int)defaultWidth, defaultHeight);
     }
 
 

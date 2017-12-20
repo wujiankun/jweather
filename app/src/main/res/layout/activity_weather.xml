@@ -71,22 +71,24 @@
 
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/white"
+        android:background="@mipmap/default_bg"
         android:orientation="vertical">
 
         <TextView
+            android:paddingTop="@dimen/margin_toolbar_top"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorTextPrimary"
+            android:background="@color/colorBgPrimary"
             android:gravity="center"
             android:text="已添加城市"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:textSize="@dimen/common_text_size" />
 
         <android.support.v7.widget.RecyclerView
+            android:layout_marginTop="3dp"
             android:id="@+id/rv_my_city_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
